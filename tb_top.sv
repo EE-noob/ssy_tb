@@ -386,7 +386,7 @@ axi_crossbar_top_inst (
   .mst0_rresp(mst0_rresp),
   .mst0_rdata(mst0_rdata),
   .mst0_rlast(mst0_rlast),
-  .mst1_aclk(mst1_aclk),
+  .mst1_aclk(aclk),
   .mst1_aresetn(aresetn),
   .mst1_srst(srst),
   .mst1_awvalid(mst1_awvalid),
@@ -421,7 +421,7 @@ axi_crossbar_top_inst (
   .mst1_rresp(mst1_rresp),
   .mst1_rdata(mst1_rdata),
   .mst1_rlast(mst1_rlast),
-  .mst2_aclk(mst2_aclk),
+  .mst2_aclk(aclk),
   .mst2_aresetn(aresetn),
   .mst2_srst(srst),
   .mst2_awvalid(mst2_awvalid),
@@ -491,7 +491,7 @@ axi_crossbar_top_inst (
   .slv0_rresp(slv0_rresp),
   .slv0_rdata(slv0_rdata),
   .slv0_rlast(slv0_rlast),
-  .slv1_aclk(slv1_aclk),
+  .slv1_aclk(aclk),
   .slv1_aresetn(aresetn),
   .slv1_srst(srst),
   .slv1_awvalid(slv1_awvalid),
@@ -526,7 +526,7 @@ axi_crossbar_top_inst (
   .slv1_rresp(slv1_rresp),
   .slv1_rdata(slv1_rdata),
   .slv1_rlast(slv1_rlast),
-  .slv2_aclk(slv2_aclk),
+  .slv2_aclk(aclk),
   .slv2_aresetn(aresetn),
   .slv2_srst(srst),
   .slv2_awvalid(slv2_awvalid),
@@ -1195,23 +1195,15 @@ fork
   begin
     aw_INCR_req_random(`MST0,`SLV0,0);
     wait(mst0_awvalid && mst0_awready);
-    @(negedge aclk);;
-    aw_req_clr(`MST0);
-  end
-
-  begin
+    @(negedge aclk);
     aw_INCR_req_random(`MST0,`SLV1,1);
     wait(mst0_awvalid && mst0_awready);
     @(negedge aclk);
-    aw_req_clr(`MST0);
-  end
-
-  begin
     aw_INCR_req_random(`MST0,`SLV2,2);
     wait(mst0_awvalid && mst0_awready);
     @(negedge aclk);
     aw_req_clr(`MST0);
-  end   
+  end
      
   begin
     aw_INCR_req_random(`MST1,`SLV2,0);
@@ -1224,21 +1216,13 @@ fork
       ar_INCR_req_random(`MST0,`SLV0,0);
       wait(mst0_arvalid && mst0_arready);
       @(negedge aclk);
-     ar_req_clr(`MST0);
-  end
-
-  begin  
-    ar_INCR_req_random(`MST0,`SLV1,1);
+     ar_INCR_req_random(`MST0,`SLV1,1);
+     wait(mst0_arvalid && mst0_arready);
+     @(negedge aclk);
+    ar_INCR_req_random(`MST0,`SLV2,2);
     wait(mst0_arvalid && mst0_arready);
     @(negedge aclk);
    ar_req_clr(`MST0);
-end
-
-begin  
-  ar_INCR_req_random(`MST0,`SLV2,2);
-  wait(mst0_arvalid && mst0_arready);
-  @(negedge aclk);
- ar_req_clr(`MST0);
 end
 join
 end
