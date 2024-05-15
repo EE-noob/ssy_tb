@@ -903,7 +903,7 @@ case (mst_id)
         mst0_awburst=`INCR;
         mst0_awvalid=1'b1;
         mst0_awid={2'b00,req_id};
-        $display("write to addr 0x%h,len=0d%d", awaddr,mst0_awlen_real);
+        $display("write to addr 0x%h,len=0d%d,req_id= 0d%d", awaddr,mst0_awlen_real,req_id);
     end 
     2'b10:
     begin
@@ -913,7 +913,7 @@ case (mst_id)
         mst1_awburst=`INCR;
         mst1_awvalid=1'b1;
         mst1_awid={2'b00,req_id};
-        $display("write to addr 0x%h,len=0d%d", awaddr,mst1_awlen_real);
+        $display("write to addr 0x%h,len=0d%d,req_id= 0d%d", awaddr,mst1_awlen_real,req_id);
     end 
     2'b11:
     begin
@@ -923,7 +923,7 @@ case (mst_id)
         mst2_awburst=`INCR;
         mst2_awvalid=1'b1;
         mst2_awid={2'b00,req_id};
-        $display("write to addr 0x%h,len=0d%d", awaddr,mst2_awlen_real);
+        $display("write to addr 0x%h,len=0d%d,req_id= 0d%d", awaddr,mst2_awlen_real,req_id);
     end 
     default: $display("error!!! 主机掩码不能为零!");
 endcase
@@ -962,7 +962,7 @@ case (mst_id)
         mst0_arburst=`INCR;
         mst0_arvalid=1'b1;
         mst0_arid={2'b00,req_id};
-        $display("read from addr 0x%h,len=0d%d", araddr,mst0_arlen_real);
+        $display("read from addr 0x%h,len=0d%d,req_id= 0d%d", araddr,mst0_arlen_real,req_id);
     end 
     2'b10:
     begin
@@ -972,7 +972,7 @@ case (mst_id)
         mst1_arburst=`INCR;
         mst1_arvalid=1'b1;
         mst1_arid={2'b00,req_id};
-        $display("read from addr 0x%h,len=0d%d", araddr,mst1_arlen_real);
+        $display("read from addr 0x%h,len=0d%d,req_id= 0d%d", araddr,mst1_arlen_real,req_id);
     end 
     2'b11:
     begin
@@ -982,14 +982,14 @@ case (mst_id)
         mst2_arburst=`INCR;
         mst2_arvalid=1'b1;
         mst2_arid={2'b00,req_id};
-        $display("read from addr 0x%h,len=0d%d", araddr,mst2_arlen_real);
+        $display("read from addr 0x%h,len=0d%d,req_id= 0d%d", araddr,mst2_arlen_real,req_id);
     end 
     default: $display("error!!! 主机掩码不能为零!");
 endcase
 end
 endtask
 
-task aw_req(    input [1:0] mst_id,    input [1:0] slv_id,    input [1:0] req_id,    input [1:0] awbust,    input [AXI_ADDR_W    -1:0]awaddr,       input [8-1:0] awlen
+task aw_req(    input [1:0] mst_id,    input [1:0] slv_id,    input [1:0] req_id,    input [1:0] awburst,    input [AXI_ADDR_W    -1:0]awaddr,       input [8-1:0] awlen
 );  
 begin
   
@@ -999,7 +999,7 @@ case (mst_id)
         mst0_awaddr=awaddr;
         mst0_awlen_real=awlen;
         mst0_awsize=mst0_narrow ? 0 : 2;
-        mst0_awburst=`INCR;
+        mst0_awburst=awburst;
         mst0_awvalid=1'b1;
         mst0_awid={2'b00,req_id};
         $display("write to addr 0x%h,len=0d%d", awaddr,mst0_awlen_real);
@@ -1009,7 +1009,7 @@ case (mst_id)
         mst1_awaddr=awaddr;
         mst1_awlen_real=awlen;
         mst1_awsize=mst1_narrow ? 0 : 2;
-        mst1_awburst=`INCR;
+        mst1_awburst=awburst;
         mst1_awvalid=1'b1;
         mst1_awid={2'b00,req_id};
         $display("write to addr 0x%h,len=0d%d", awaddr,mst1_awlen_real);
@@ -1019,7 +1019,7 @@ case (mst_id)
         mst2_awaddr=awaddr;
         mst2_awlen_real=awlen;
         mst2_awsize=mst2_narrow ? 0 : 2;
-        mst2_awburst=`INCR;
+        mst2_awburst=awburst;
         mst2_awvalid=1'b1;
         mst2_awid={2'b00,req_id};
         $display("write to addr 0x%h,len=0d%d", awaddr,mst2_awlen_real);
@@ -1371,21 +1371,25 @@ initial begin
 
     test_status=4;
     mst0_fixed_burst();
-    mst0_wrap_burst();
-    $display("\n *******fixed and wrap burst test finish!!!******* \n");
+    $display("\n *******fixed burst test finish!!!******* \n");
     repeat(100) @(posedge aclk);
 
     test_status=5;
+    mst0_wrap_burst();
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(posedge aclk);
+
+    test_status=6;
     multi2multi();
     $display("\n *******multi2multi burst test finish!!!******* \n");
     repeat(100) @(posedge aclk);
 
-    test_status=6;
+    test_status=7;
     mst0_4kBound_burst();
     $display("\n *******4k Bound test finish!!!******* \n");
     repeat(100) @(posedge aclk);
 
-    test_status=7;
+    test_status=8;
     mst0_mistroute();
     $display("\n *******mistroute test finish!!!******* \n");
     repeat(100) @(posedge aclk);
