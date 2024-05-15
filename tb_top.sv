@@ -1094,7 +1094,7 @@ begin
     repeat(testnum)begin
       aw_INCR_req_random(`MST0,`SLV0,wr_req_id);
       wait(mst0_awvalid && mst0_awready);
-      @(posedge aclk);
+      @(negedge aclk);
       wr_req_id+=1;
     end
 
@@ -1103,7 +1103,7 @@ begin
      repeat(testnum)begin
       ar_INCR_req_random(`MST0,`SLV0,rd_req_id);
       wait(mst0_arvalid && mst0_arready);
-      @(posedge aclk);
+      @(negedge aclk);
       rd_req_id+=1;
     end
 
@@ -1119,7 +1119,7 @@ begin
 
     
   aw_req(`MST0,`SLV0,wr_req_id,`INCR,0,255);
-  @(posedge aclk);
+  @(negedge aclk);
   wait(mst0_awvalid && mst0_awready);
   
   wr_req_id+=1;
@@ -1144,7 +1144,7 @@ begin
 
     
   aw_req(`MST0,`SLV0,wr_req_id,`FIXED,8,10);
-  @(posedge aclk);
+  @(negedge aclk);
   wait(mst0_awvalid && mst0_awready);
   
   wr_req_id+=1;
@@ -1169,7 +1169,7 @@ begin
 
     
   aw_req(`MST0,`SLV0,wr_req_id,`WRAP,4088,12);
-  @(posedge aclk);
+  @(negedge aclk);
   wait(mst0_awvalid && mst0_awready);
   
   wr_req_id+=1;
@@ -1195,49 +1195,49 @@ fork
   begin
     aw_INCR_req_random(`MST0,`SLV0,0);
     wait(mst0_awvalid && mst0_awready);
-    @(posedge aclk);;
+    @(negedge aclk);;
     aw_req_clr(`MST0);
   end
 
   begin
     aw_INCR_req_random(`MST0,`SLV1,1);
     wait(mst0_awvalid && mst0_awready);
-    @(posedge aclk);
+    @(negedge aclk);
     aw_req_clr(`MST0);
   end
 
   begin
     aw_INCR_req_random(`MST0,`SLV2,2);
     wait(mst0_awvalid && mst0_awready);
-    @(posedge aclk);
+    @(negedge aclk);
     aw_req_clr(`MST0);
   end   
      
   begin
     aw_INCR_req_random(`MST1,`SLV2,0);
     wait(mst0_awvalid && mst0_awready);
-    @(posedge aclk);
+    @(negedge aclk);
     aw_req_clr(`MST1);
   end     
  
   begin  
       ar_INCR_req_random(`MST0,`SLV0,0);
       wait(mst0_arvalid && mst0_arready);
-      @(posedge aclk);
+      @(negedge aclk);
      ar_req_clr(`MST0);
   end
 
   begin  
     ar_INCR_req_random(`MST0,`SLV1,1);
     wait(mst0_arvalid && mst0_arready);
-    @(posedge aclk);
+    @(negedge aclk);
    ar_req_clr(`MST0);
 end
 
 begin  
   ar_INCR_req_random(`MST0,`SLV2,2);
   wait(mst0_arvalid && mst0_arready);
-  @(posedge aclk);
+  @(negedge aclk);
  ar_req_clr(`MST0);
 end
 join
@@ -1252,7 +1252,7 @@ begin
 
     
   aw_req(`MST0,`SLV0,wr_req_id,`INCR,4088,12);
-  @(posedge aclk);
+  @(negedge aclk);
   wait(mst0_awvalid && mst0_awready);
   
   wr_req_id+=1;
@@ -1277,7 +1277,7 @@ begin
 
     
   aw_req(`MST0,2'b11,wr_req_id,`INCR,16383+32,8);
-  @(posedge aclk);
+  @(negedge aclk);
   wait(mst0_awvalid && mst0_awready);
   
   wr_req_id+=1;
@@ -1320,7 +1320,7 @@ initial begin
   task Finish ();
   begin
       $display("%0t: %m: finishing simulation..", $time);
-      //repeat (100) @(posedge top.i_osc_clk);
+      //repeat (100) @(negedge top.i_osc_clk);
       $display("\n////////////////////////////////////////////////////////////////////////////");
       $display("%0t: Simulation ended, ERROR count: %0d", $time, err_count);
       $display("////////////////////////////////////////////////////////////////////////////\n");
@@ -1357,42 +1357,42 @@ initial begin
     test_status=1;
     mst0_or();
     $display("\n *******outstanding test finish!!!******* \n");
-    repeat(100) @(posedge aclk);
+    repeat(100) @(negedge aclk);
 
     test_status=2;
     mst0_narrow_or();
     $display("\n *******narrow test finish!!!******* \n");
-    repeat(100) @(posedge aclk);
+    repeat(100) @(negedge aclk);
 
     test_status=3;
     mst0_256_burst();
     $display("\n *******256 length burst test finish!!!******* \n");
-    repeat(500) @(posedge aclk);
+    repeat(500) @(negedge aclk);
 
     test_status=4;
     mst0_fixed_burst();
     $display("\n *******fixed burst test finish!!!******* \n");
-    repeat(100) @(posedge aclk);
+    repeat(100) @(negedge aclk);
 
     test_status=5;
     mst0_wrap_burst();
     $display("\n ******* wrap burst test finish!!!******* \n");
-    repeat(100) @(posedge aclk);
+    repeat(100) @(negedge aclk);
 
     test_status=6;
     multi2multi();
     $display("\n *******multi2multi burst test finish!!!******* \n");
-    repeat(100) @(posedge aclk);
+    repeat(100) @(negedge aclk);
 
     test_status=7;
     mst0_4kBound_burst();
     $display("\n *******4k Bound test finish!!!******* \n");
-    repeat(100) @(posedge aclk);
+    repeat(100) @(negedge aclk);
 
     test_status=8;
     mst0_mistroute();
     $display("\n *******mistroute test finish!!!******* \n");
-    repeat(100) @(posedge aclk);
+    repeat(100) @(negedge aclk);
 
     $display("****************************************************************");
     $display ("*******all test case task done!!!!! at time %t*******", $time);
@@ -1405,14 +1405,14 @@ end
 
 //rcv rsp
 
-// always_ff @( posedge aclk or negedge aresetn ) begin : __err_count
+// always_ff @( negedge aclk or negedge aresetn ) begin : __err_count
 //   if(!aresetn)
 //     err_count<=testnum;
 //   else if(mst0_bready && mst0_bvalid)
 //     err_count<=err_count -1;
 //   end
 
-  always_ff @( posedge aclk or negedge aresetn ) begin : __wr_rsp_success_cnt
+  always_ff @( negedge aclk or negedge aresetn ) begin : __wr_rsp_success_cnt
     if(!aresetn)
       wr_rsp_success_cnt<=testnum;
     else if(mst0_bready && mst0_bvalid)
@@ -1422,7 +1422,7 @@ end
       end
     end
 
-    // always_ff @( posedge aclk or negedge aresetn ) begin : __rd_rsp_success_cnt
+    // always_ff @( negedge aclk or negedge aresetn ) begin : __rd_rsp_success_cnt
     //   if(!aresetn)
     //     rd_rsp_success_cnt<=testnum;
     //   else if(mst0_bready && mst0_bvalid)
