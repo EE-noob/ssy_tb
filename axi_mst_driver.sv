@@ -168,7 +168,7 @@ always_ff @( posedge aclk or negedge aresetn) begin : __awlen_ram
 always_ff @( posedge aclk or negedge aresetn) begin : __awid_rd_ptr
     if(!aresetn)
         awid_rd_ptr <= 'b0;
-    else if(out_wlast)
+    else if(out_wlast && out_wvalid && in_wready)
         awid_rd_ptr <= awlen_rd_ptr+1;
     end
 
