@@ -197,7 +197,7 @@ always @( posedge aclk or negedge aresetn) begin : __wdata//!!!fix me!!!can't sy
     if(!aresetn)
         out_wdata=#1 'b0;
     else if(out_wvalid && in_wready)
-        out_wdata=#1 narrow? $random & wstrb32 :$random ;    
+        out_wdata=#1 narrow? (out_wdata +1) & wstrb32 :(out_wdata +1);    
 end
 always_ff @( posedge aclk or negedge aresetn) begin : __out_bready
     if(!aresetn)
