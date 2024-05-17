@@ -1141,7 +1141,7 @@ begin
   rd_req_id=0;
 
     
-  aw_req(`MST0,`SLV0,wr_req_id,`FIXED,8,10);
+  aw_req(`MST0,`SLV0,wr_req_id,`FIXED,0,10);
   @(negedge aclk);
   wait(mst0_awvalid && mst0_awready);
   
