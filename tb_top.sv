@@ -1148,14 +1148,11 @@ begin
   wr_req_id+=1;
   aw_req_clr(`MST0);
   
-    //  repeat(testnum)begin
-    //   ar_INCR_req_random(`MST0,`SLV0,rd_req_id);
-    //   wait(mst0_arvalid && mst0_arready);
-    //   @(negedge aclk);
-    //   rd_req_id+=1;
-    // end
-
-    //  ar_req_clr(`MST0);
+  ar_req(`MST0,`SLV0,rd_req_id,`FIXED,0,10);
+  @(negedge aclk);
+  wait(mst0_arvalid && mst0_arready);
+  rd_req_id+=1;
+  ar_req_clr(`MST0);
 end
 endtask
 
@@ -1173,14 +1170,11 @@ begin
   wr_req_id+=1;
   aw_req_clr(`MST0);
   
-    //  repeat(testnum)begin
-    //   ar_INCR_req_random(`MST0,`SLV0,rd_req_id);
-    //   wait(mst0_arvalid && mst0_arready);
-    //   @(negedge aclk);
-    //   rd_req_id+=1;
-    // end
-
-    //  ar_req_clr(`MST0);
+  ar_req(`MST0,`SLV0,rd_req_id,`WRAP,4088,12);
+  @(negedge aclk);
+  wait(mst0_arvalid && mst0_arready);
+  rd_req_id+=1;
+  ar_req_clr(`MST0);
 end
 endtask
 
@@ -1240,14 +1234,11 @@ begin
   wr_req_id+=1;
   aw_req_clr(`MST0);
   
-    //  repeat(testnum)begin
-    //   ar_INCR_req_random(`MST0,`SLV0,rd_req_id);
-    //   wait(mst0_arvalid && mst0_arready);
-    //   @(negedge aclk);
-    //   rd_req_id+=1;
-    // end
-
-    //  ar_req_clr(`MST0);
+  ar_req(`MST0,`SLV0,rd_req_id,`INCR,4090,7);
+  @(negedge aclk);
+  wait(mst0_arvalid && mst0_arready);
+  rd_req_id+=1;
+  ar_req_clr(`MST0);
 end
 endtask
 
@@ -1265,14 +1256,11 @@ begin
   wr_req_id+=1;
   aw_req_clr(`MST0);
   
-    //  repeat(testnum)begin
-    //   ar_INCR_req_random(`MST0,`SLV0,rd_req_id);
-    //   wait(mst0_arvalid && mst0_arready);
-    //   @(negedge aclk);
-    //   rd_req_id+=1;
-    // end
-
-    //  ar_req_clr(`MST0);
+  ar_req(`MST0,2'b11,rd_req_id,`INCR,12287+32,7);
+  @(negedge aclk);
+  wait(mst0_arvalid && mst0_arready);
+  rd_req_id+=1;
+  ar_req_clr(`MST0);
 end
 endtask
 //<<<
