@@ -1,0 +1,11 @@
+outstanding
+窄带传输
+256拍的incr burst传输
+三种brust
+多对多
+4k边界处理
+mistroute
+out of order  
+interleaving
+
+（上述行号等于test_status+1）
