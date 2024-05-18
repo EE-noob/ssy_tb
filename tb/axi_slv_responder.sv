@@ -1,4 +1,5 @@
 module axi_slv_responder #(
+    parameter always_ready=0,
     parameter AXI_ADDR_W = 32,
     //主机输入ID宽度
     parameter AXI_ID_W  =4,
@@ -252,6 +253,8 @@ end
 always_ff @( posedge aclk or negedge aresetn) begin : __out_awready
     if(!aresetn)
         out_awready <= 'b0;
+    else if(always_ready)
+        out_awready<= 1;
     else 
         out_awready<= $random;//!!!!fixme !!!!完全随机！！！！
     end
@@ -259,7 +262,9 @@ always_ff @( posedge aclk or negedge aresetn) begin : __out_awready
 always_ff @( posedge aclk or negedge aresetn) begin : __out_wready
     if(!aresetn)
         out_wready <= 'b0;
-    else 
+    else if(always_ready)
+        out_wready<= 1;
+    else
         out_wready<= $random;//!!!!fixme !!!!完全随机！！！！
     end
 

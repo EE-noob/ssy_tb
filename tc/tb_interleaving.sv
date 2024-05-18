@@ -369,7 +369,7 @@ axi_crossbar_top_inst (
   .mst0_wstrb(mst0_wstrb),
   .mst0_wid(mst0_wid),
   .mst0_bvalid(mst0_bvalid),
-  .mst0_bready(mst0_bready),
+  .mst0_bready(1),
   .mst0_bid(mst0_bid),
   .mst0_bresp(mst0_bresp),
   .mst0_arvalid(mst0_arvalid),
@@ -381,7 +381,7 @@ axi_crossbar_top_inst (
   .mst0_arlock(mst0_arlock),
   .mst0_arid(mst0_arid),
   .mst0_rvalid(mst0_rvalid),
-  .mst0_rready(mst0_rready),
+  .mst0_rready(1),
   .mst0_rid(mst0_rid),
   .mst0_rresp(mst0_rresp),
   .mst0_rdata(mst0_rdata),
@@ -404,7 +404,7 @@ axi_crossbar_top_inst (
   .mst1_wstrb(mst1_wstrb),
   .mst1_wid(mst1_wid),
   .mst1_bvalid(mst1_bvalid),
-  .mst1_bready(mst1_bready),
+  .mst1_bready(1),
   .mst1_bid(mst1_bid),
   .mst1_bresp(mst1_bresp),
   .mst1_arvalid(mst1_arvalid),
@@ -416,7 +416,7 @@ axi_crossbar_top_inst (
   .mst1_arlock(mst1_arlock),
   .mst1_arid(mst1_arid),
   .mst1_rvalid(mst1_rvalid),
-  .mst1_rready(mst1_rready),
+  .mst1_rready(1),
   .mst1_rid(mst1_rid),
   .mst1_rresp(mst1_rresp),
   .mst1_rdata(mst1_rdata),
@@ -439,7 +439,7 @@ axi_crossbar_top_inst (
   .mst2_wstrb(mst2_wstrb),
   .mst2_wid(mst2_wid),
   .mst2_bvalid(mst2_bvalid),
-  .mst2_bready(mst2_bready),
+  .mst2_bready(1),
   .mst2_bid(mst2_bid),
   .mst2_bresp(mst2_bresp),
   .mst2_arvalid(mst2_arvalid),
@@ -451,7 +451,7 @@ axi_crossbar_top_inst (
   .mst2_arlock(mst2_arlock),
   .mst2_arid(mst2_arid),
   .mst2_rvalid(mst2_rvalid),
-  .mst2_rready(mst2_rready),
+  .mst2_rready(1),
   .mst2_rid(mst2_rid),
   .mst2_rresp(mst2_rresp),
   .mst2_rdata(mst2_rdata),
@@ -565,108 +565,109 @@ axi_crossbar_top_inst (
 //<<<
 
 //mst>>>
-axi_mst_driver # (
-    .AXI_ADDR_W(AXI_ADDR_W),
-    .AXI_ID_W(AXI_ID_W),
-    .AXI_DATA_W(AXI_DATA_W),
-    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-    .AWCH_W(AWCH_W),
-    .WCH_W(WCH_W),
-    .BCH_W(BCH_W),
-    .ARCH_W(ARCH_W),
-    .RCH_W(RCH_W)
-  )
-  axi_mst0_driver_inst (
-    .aclk(aclk),
-    .aresetn(aresetn),
-    .srst(srst),
-    .in_awvalid(mst0_awvalid),
-    .in_awready(mst0_awready),
-    .in_awlen_real(mst0_awlen_real),
-    .awlen(mst0_awlen),
-    .in_awid(mst0_awid),
+// axi_mst_driver # (
+//     .AXI_ADDR_W(AXI_ADDR_W),
+//     .AXI_ID_W(AXI_ID_W),
+//     .AXI_DATA_W(AXI_DATA_W),
+//     .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+//     .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+//     .AWCH_W(AWCH_W),
+//     .WCH_W(WCH_W),
+//     .BCH_W(BCH_W),
+//     .ARCH_W(ARCH_W),
+//     .RCH_W(RCH_W)
+//   )
+//   axi_mst0_driver_inst (
+//     .aclk(aclk),
+//     .aresetn(aresetn),
+//     .srst(srst),
+//     .in_awvalid(mst0_awvalid),
+//     .in_awready(mst0_awready),
+//     .in_awlen_real(mst0_awlen_real),
+//     .awlen(mst0_awlen),
+//     .in_awid(mst0_awid),
     
-    .out_wvalid(mst0_wvalid),
-    .in_wready(mst0_wready),
-    .out_wlast(mst0_wlast),
-    .out_wid(mst0_wid),
-    .out_wdata(mst0_wdata),
-    .out_wstrb(mst0_wstrb),
-    .narrow(mst0_narrow),
-    .out_rready(mst0_rready),
-    .out_bready(mst0_bready)
-  );
+//     .out_wvalid(mst0_wvalid),
+//     .in_wready(mst0_wready),
+//     .out_wlast(mst0_wlast),
+//     .out_wid(mst0_wid),
+//     .out_wdata(mst0_wdata),
+//     .out_wstrb(mst0_wstrb),
+//     .narrow(mst0_narrow),
+//     .out_rready(mst0_rready),
+//     .out_bready(mst0_bready)
+//   );
 
-  axi_mst_driver # (
-    .AXI_ADDR_W(AXI_ADDR_W),
-    .AXI_ID_W(AXI_ID_W),
-    .AXI_DATA_W(AXI_DATA_W),
-    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-    .AWCH_W(AWCH_W),
-    .WCH_W(WCH_W),
-    .BCH_W(BCH_W),
-    .ARCH_W(ARCH_W),
-    .RCH_W(RCH_W)
-  )
-  axi_mst1_driver_inst (
-    .aclk(aclk),
-    .aresetn(aresetn),
-    .srst(srst),
-    .in_awvalid(mst1_awvalid),
-    .in_awready(mst1_awready),
-    .in_awlen_real(mst1_awlen_real),
-    .awlen(mst1_awlen),
-    .in_awid(mst1_awid),
+  // axi_mst_driver # (
+  //   .AXI_ADDR_W(AXI_ADDR_W),
+  //   .AXI_ID_W(AXI_ID_W),
+  //   .AXI_DATA_W(AXI_DATA_W),
+  //   .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+  //   .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+  //   .AWCH_W(AWCH_W),
+  //   .WCH_W(WCH_W),
+  //   .BCH_W(BCH_W),
+  //   .ARCH_W(ARCH_W),
+  //   .RCH_W(RCH_W)
+  // )
+  // axi_mst1_driver_inst (
+  //   .aclk(aclk),
+  //   .aresetn(aresetn),
+  //   .srst(srst),
+  //   .in_awvalid(mst1_awvalid),
+  //   .in_awready(mst1_awready),
+  //   .in_awlen_real(mst1_awlen_real),
+  //   .awlen(mst1_awlen),
+  //   .in_awid(mst1_awid),
   
-    .out_wvalid(mst1_wvalid),
-    .in_wready(mst1_wready),
-    .out_wlast(mst1_wlast),
-    .out_wid(mst1_wid),
-    .out_wdata(mst1_wdata),
-    .out_wstrb(mst1_wstrb),
-    .narrow(mst1_narrow),
-    .out_rready(mst1_rready),
-    .out_bready(mst1_bready)
-  );
+  //   .out_wvalid(mst1_wvalid),
+  //   .in_wready(mst1_wready),
+  //   .out_wlast(mst1_wlast),
+  //   .out_wid(mst1_wid),
+  //   .out_wdata(mst1_wdata),
+  //   .out_wstrb(mst1_wstrb),
+  //   .narrow(mst1_narrow),
+  //   .out_rready(mst1_rready),
+  //   .out_bready(mst1_bready)
+  // );
 
-  axi_mst_driver # (
-    .AXI_ADDR_W(AXI_ADDR_W),
-    .AXI_ID_W(AXI_ID_W),
-    .AXI_DATA_W(AXI_DATA_W),
-    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-    .AWCH_W(AWCH_W),
-    .WCH_W(WCH_W),
-    .BCH_W(BCH_W),
-    .ARCH_W(ARCH_W),
-    .RCH_W(RCH_W)
-  )
-  axi_mst2_driver_inst (
-    .aclk(aclk),
-    .aresetn(aresetn),
-    .srst(srst),
-    .in_awvalid(mst2_awvalid),
-    .in_awready(mst2_awready),
-    .in_awlen_real(mst2_awlen_real),
-    .awlen(mst2_awlen),
-    .in_awid(mst2_awid),
+  // axi_mst_driver # (
+  //   .AXI_ADDR_W(AXI_ADDR_W),
+  //   .AXI_ID_W(AXI_ID_W),
+  //   .AXI_DATA_W(AXI_DATA_W),
+  //   .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+  //   .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+  //   .AWCH_W(AWCH_W),
+  //   .WCH_W(WCH_W),
+  //   .BCH_W(BCH_W),
+  //   .ARCH_W(ARCH_W),
+  //   .RCH_W(RCH_W)
+  // )
+  // axi_mst2_driver_inst (
+  //   .aclk(aclk),
+  //   .aresetn(aresetn),
+  //   .srst(srst),
+  //   .in_awvalid(mst2_awvalid),
+  //   .in_awready(mst2_awready),
+  //   .in_awlen_real(mst2_awlen_real),
+  //   .awlen(mst2_awlen),
+  //   .in_awid(mst2_awid),
 
-    .out_wvalid(mst2_wvalid),
-    .in_wready(mst2_wready),
-    .out_wlast(mst2_wlast),
-    .out_wid(mst2_wid),
-    .out_wdata(mst2_wdata),
-    .out_wstrb(mst2_wstrb),
-    .narrow(mst2_narrow),
-    .out_rready(mst2_rready),
-    .out_bready(mst2_bready)
-  );
+  //   .out_wvalid(mst2_wvalid),
+  //   .in_wready(mst2_wready),
+  //   .out_wlast(mst2_wlast),
+  //   .out_wid(mst2_wid),
+  //   .out_wdata(mst2_wdata),
+  //   .out_wstrb(mst2_wstrb),
+  //   .narrow(mst2_narrow),
+  //   .out_rready(mst2_rready),
+  //   .out_bready(mst2_bready)
+  // );
 //<<<
 
 //slv>>>
   axi_slv_responder # (
+    .always_ready(1),
     .AXI_ADDR_W(AXI_ADDR_W),
     .AXI_ID_W(AXI_ID_W),
     .AXI_DATA_W(AXI_DATA_W),
@@ -706,6 +707,7 @@ axi_mst_driver # (
   );
 
   axi_slv_responder # (
+    .always_ready(1),
     .AXI_ADDR_W(AXI_ADDR_W),
     .AXI_ID_W(AXI_ID_W),
     .AXI_DATA_W(AXI_DATA_W),
@@ -1069,7 +1071,7 @@ endcase
 end
 endtask
 
-task wr(input [1:0] mst_id,input [1:0] wid,input  wvalid,input [AXI_DATA_W - 1 : 0] wdata,input wstrb
+task wr(input [1:0] mst_id,input [1:0] wid,input [AXI_DATA_W - 1 : 0] wdata,input [4-1:0]wstrb
 );   
 begin
   
@@ -1077,21 +1079,21 @@ case (mst_id)
     2'b01: 
     begin
         mst0_wid={2'b00,wid};
-        mst0_wvalid=wvalid;
+        mst0_wvalid=1;
         mst0_wdata=wdata;
         mst0_wstrb=wstrb;
     end 
     2'b10:
     begin
       mst1_wid={2'b00,wid};
-      mst1_wvalid=wvalid;
+      mst1_wvalid=1;
       mst1_wdata=wdata;
       mst1_wstrb=wstrb;
     end 
     2'b11:
     begin
       mst2_wid={2'b00,wid};
-      mst2_wvalid=wvalid;
+      mst2_wvalid=1;
       mst2_wdata=wdata;
       mst2_wstrb=wstrb;
     end 
@@ -1439,27 +1441,59 @@ initial begin
     wr_clr(`MST0);
     wr_clr(`MST1);
     wr_clr(`MST2);
+    mst0_wlast=0;
+    mst1_wlast=0;
+    mst2_wlast=0;
     @(negedge aclk);
 
   //aw req
-    aw_req(`MST0,`SLV0,0,`INCR,0,5);
+    aw_req(`MST0,`SLV0,0,`INCR,32,2);
     @(negedge aclk);
     wait(mst0_awvalid && mst0_awready);
   
-  //send msg
-    wr(`MST0,
-    0,
-    );
+  //send id=0
+    wr(`MST0,0,32'h1111_1111, 4'b1111);
+    aw_req(`MST0,`SLV0,1,`INCR,4104,1);
+    @(negedge aclk);
 
-    aw_req(`MST0,`SLV0,0,`INCR,0,5);
-    
-    wr_req_id+=1;
+    wr(`MST0,0,32'h2222_2222, 4'b1111);
+    aw_req(`MST0,`SLV0,2,`INCR,64,3);
+    @(negedge aclk);
+
+    wr(`MST0,0,32'h3333_3333, 4'b1111);
+    mst0_wlast=1;
     aw_req_clr(`MST0);
+    @(negedge aclk);
+    
+    // wr_clr(`MST0);
+    // @(negedge aclk);
+  //send id=2  
+    wr(`MST0,2,32'h1111_1111, 4'b1111);
+    mst0_wlast=0;
+    @(negedge aclk);
 
-    test_status=1;
-    mst0_or();
-    $display("\n *******outstanding test finish!!!******* \n");
-    repeat(100) @(negedge aclk);
+    wr(`MST0,2,32'h2222_2222, 4'b1111);
+    @(negedge aclk);
+
+    wr(`MST0,2,32'h3333_3333, 4'b1111);
+    @(negedge aclk);
+
+    wr(`MST0,2,32'h4444_4444, 4'b1111);
+    mst0_wlast=1;
+    @(negedge aclk);
+    
+    //send id=1  
+    wr(`MST0,1,32'h1111_1111, 4'b1111);
+    mst0_wlast=0;
+    @(negedge aclk);
+
+    wr(`MST0,1,32'h2222_2222, 4'b1111);
+    @(negedge aclk);
+
+    wr_clr(`MST0);
+
+    $display("\n *******wr out of order test finish!!!******* \n");
+     repeat(100) @(negedge aclk);
 
 
 
