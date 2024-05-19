@@ -667,7 +667,7 @@ axi_crossbar_top_inst (
 
 //slv>>>
   axi_slv_responder # (
-    .always_ready(1),
+    .ALWAYS_READY(1),
     .AXI_ADDR_W(AXI_ADDR_W),
     .AXI_ID_W(AXI_ID_W),
     .AXI_DATA_W(AXI_DATA_W),
@@ -707,7 +707,7 @@ axi_crossbar_top_inst (
   );
 
   axi_slv_responder # (
-    .always_ready(1),
+    .ALWAYS_READY(1),
     .AXI_ADDR_W(AXI_ADDR_W),
     .AXI_ID_W(AXI_ID_W),
     .AXI_DATA_W(AXI_DATA_W),
@@ -1384,6 +1384,99 @@ begin
   ar_req_clr(`MST0);
 end
 endtask
+
+
+task out_of_order();
+begin
+    //aw req
+  aw_req(`MST0,`SLV0,0,`INCR,32,2);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+
+//send id=0
+  wr(`MST0,0,32'h1111_1111, 4'b1111);
+  aw_req(`MST0,`SLV0,1,`INCR,4104,1);
+  @(negedge aclk);
+
+  wr(`MST0,0,32'h2222_2222, 4'b1111);
+  aw_req(`MST0,`SLV0,2,`INCR,64,3);
+  @(negedge aclk);
+
+  wr(`MST0,0,32'h3333_3333, 4'b1111);
+  mst0_wlast=1;
+  aw_req_clr(`MST0);
+  @(negedge aclk); 
+  
+  // wr_clr(`MST0);
+  // @(negedge aclk);
+//send id=2  
+  wr(`MST0,2,32'h1111_1111, 4'b1111);
+  mst0_wlast=0;
+  @(negedge aclk);
+
+  wr(`MST0,2,32'h2222_2222, 4'b1111);
+  @(negedge aclk);
+
+  wr(`MST0,2,32'h3333_3333, 4'b1111);
+  @(negedge aclk);
+
+  wr(`MST0,2,32'h4444_4444, 4'b1111);
+  mst0_wlast=1;
+  @(negedge aclk);
+  
+  //send id=1  
+  wr(`MST0,1,32'h1111_1111, 4'b1111);
+  mst0_wlast=0;
+  @(negedge aclk);
+
+  wr(`MST0,1,32'h2222_2222, 4'b1111);
+  mst0_wlast=1;
+  @(negedge aclk);
+
+  wr_clr(`MST0);
+  mst0_wlast=0;
+end
+
+endtask
+
+task interleaving();
+  //aw req
+aw_req(`MST0,`SLV0,0,`INCR,32,3);
+@(negedge aclk);
+wait(mst0_awvalid && mst0_awready);
+
+//send id=0
+wr(`MST0,0,32'h1010_1111, 4'b1111);
+aw_req(`MST0,`SLV0,1,`INCR,4104,3);
+@(negedge aclk);
+
+wr(`MST0,1,32'h2020_1111, 4'b1111);
+aw_req_clr(`MST0);
+@(negedge aclk);
+
+wr(`MST0,0,32'h1010_2222, 4'b1111);
+@(negedge aclk); 
+
+wr(`MST0,1,32'h2020_2222, 4'b1111);
+@(negedge aclk);
+
+wr(`MST0,0,32'h1010_3333, 4'b1111);
+@(negedge aclk);
+
+wr(`MST0,1,32'h2020_3333, 4'b1111);
+@(negedge aclk);
+
+wr(`MST0,0,32'h1010_4444, 4'b1111);
+mst0_wlast=1;
+@(negedge aclk);
+
+wr(`MST0,1,32'h1010_4444, 4'b1111);
+mst0_wlast=1;
+@(negedge aclk);
+
+wr_clr(`MST0);
+mst0_wlast=0;
+endtask //interleaving();
 //<<<
 
 //dump、timeout、finish>>>
@@ -1454,94 +1547,12 @@ initial begin
     axi_init();
     @(negedge aclk);
 
-  //aw req
-    aw_req(`MST0,`SLV0,0,`INCR,32,2);
-    @(negedge aclk);
-    wait(mst0_awvalid && mst0_awready);
-  
-  //send id=0
-    wr(`MST0,0,32'h1111_1111, 4'b1111);
-    aw_req(`MST0,`SLV0,1,`INCR,4104,1);
-    @(negedge aclk);
-
-    wr(`MST0,0,32'h2222_2222, 4'b1111);
-    aw_req(`MST0,`SLV0,2,`INCR,64,3);
-    @(negedge aclk);
-
-    wr(`MST0,0,32'h3333_3333, 4'b1111);
-    mst0_wlast=1;
-    aw_req_clr(`MST0);
-    @(negedge aclk); 
-    
-    // wr_clr(`MST0);
-    // @(negedge aclk);
-  //send id=2  
-    wr(`MST0,2,32'h1111_1111, 4'b1111);
-    mst0_wlast=0;
-    @(negedge aclk);
-
-    wr(`MST0,2,32'h2222_2222, 4'b1111);
-    @(negedge aclk);
-
-    wr(`MST0,2,32'h3333_3333, 4'b1111);
-    @(negedge aclk);
-
-    wr(`MST0,2,32'h4444_4444, 4'b1111);
-    mst0_wlast=1;
-    @(negedge aclk);
-    
-    //send id=1  
-    wr(`MST0,1,32'h1111_1111, 4'b1111);
-    mst0_wlast=0;
-    @(negedge aclk);
-
-    wr(`MST0,1,32'h2222_2222, 4'b1111);
-    mst0_wlast=1;
-    @(negedge aclk);
-
-    wr_clr(`MST0);
-    mst0_wlast=0;
+    out_of_order();
     $display("\n *******wr out of order test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
 
-
-    //aw req
-    aw_req(`MST0,`SLV0,0,`INCR,32,3);
-    @(negedge aclk);
-    wait(mst0_awvalid && mst0_awready);
-  
-  //send id=0
-    wr(`MST0,0,32'h1010_1111, 4'b1111);
-    aw_req(`MST0,`SLV0,1,`INCR,4104,3);
-    @(negedge aclk);
-
-    wr(`MST0,1,32'h2020_1111, 4'b1111);
-    aw_req_clr(`MST0);
-    @(negedge aclk);
-
-    wr(`MST0,0,32'h1010_2222, 4'b1111);
-    @(negedge aclk); 
-    
-    wr(`MST0,1,32'h2020_2222, 4'b1111);
-    @(negedge aclk);
-
-    wr(`MST0,0,32'h1010_3333, 4'b1111);
-    @(negedge aclk);
-
-    wr(`MST0,1,32'h2020_3333, 4'b1111);
-    @(negedge aclk);
-
-    wr(`MST0,0,32'h1010_4444, 4'b1111);
-    mst0_wlast=1;
-    @(negedge aclk);
-
-    wr(`MST0,1,32'h1010_4444, 4'b1111);
-    mst0_wlast=1;
-    @(negedge aclk);
-
-    wr_clr(`MST0);
-    mst0_wlast=0;
+    interleaving();
     $display("\n *******wr interleaving test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 

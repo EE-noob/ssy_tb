@@ -1,0 +1,1 @@
+在sim 文件夹下运行指令 make verintl ，进行写乱序和写交织的仿真；运行make versim 进行其他测试用例的仿真。
