@@ -1151,6 +1151,16 @@ begin
     mst0_narrow='b0;
     mst1_narrow='b0;
     mst2_narrow='b0;
+
+    wr_clr(`MST0);
+    wr_clr(`MST1);
+    wr_clr(`MST2);
+    mst0_wlast=0;
+    mst1_wlast=0;
+    mst2_wlast=0;
+    mst0_wvalid=0;
+    mst1_wvalid=0;
+    mst2_wvalid=0;
     //@(negedge aclk);
 
     @(negedge aclk);
@@ -1442,15 +1452,6 @@ initial begin
   //init
     test_status=0;
     axi_init();
-    wr_clr(`MST0);
-    wr_clr(`MST1);
-    wr_clr(`MST2);
-    mst0_wlast=0;
-    mst1_wlast=0;
-    mst2_wlast=0;
-    mst0_wvalid=0;
-    mst1_wvalid=0;
-    mst2_wvalid=0;
     @(negedge aclk);
 
   //aw req
