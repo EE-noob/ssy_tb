@@ -1430,6 +1430,10 @@ always #(clk_period/2)  aclk = ~ aclk ;
 assign mst0_arlen=mst0_arlen_real[4-1:0];
 assign mst1_arlen=mst1_arlen_real[4-1:0];
 assign mst2_arlen=mst2_arlen_real[4-1:0];
+
+assign mst0_awlen=mst0_awlen_real[4-1:0];
+assign mst1_awlen=mst1_awlen_real[4-1:0];
+assign mst2_awlen=mst2_awlen_real[4-1:0];
 //assign mst0 mst0_awlen_real;
 //main>>>
 
@@ -1444,6 +1448,9 @@ initial begin
     mst0_wlast=0;
     mst1_wlast=0;
     mst2_wlast=0;
+    mst0_wvalid=0;
+    mst1_wvalid=0;
+    mst2_wvalid=0;
     @(negedge aclk);
 
   //aw req
