@@ -328,7 +328,18 @@ logic					hgrant;
 logic		[3:0]		hmaster;
 //axi2ahb<<<
 
+//apb>>>
+logic                       PRESETn,
+logic                       PCLK,
+logic                       PSEL,
+logic [APB_ADDR_WIDTH -1:0] PADDR,
+logic                       PENABLE,
+logic                       PWRITE,
+logic [CONFIG_WIDTH   -1:0] PWADTA,
+logic [CONFIG_WIDTH   -1:0] PRADTA,
+logic                       PREADY,
 
+logic                      low_power_n,
 
 //dut>>>
 
@@ -549,94 +560,81 @@ axi_crossbar_top_inst (
   .slv1_rresp(slv1_rresp),
   .slv1_rdata(slv1_rdata),
   .slv1_rlast(slv1_rlast),
-  .slv2_aclk(aclk),
-  .slv2_aresetn(aresetn),
-  .slv2_srst(srst),
-  .slv2_awvalid(slv2_awvalid),
-  .slv2_awready(slv2_awready),
-  .slv2_awaddr(slv2_awaddr),
-  .slv2_awlen(slv2_awlen),
-  .slv2_awsize(slv2_awsize),
-  .slv2_awburst(slv2_awburst),
-  .slv2_awlock(slv2_awlock),
-  .slv2_awid(slv2_awid),
-  .slv2_wvalid(slv2_wvalid),
-  .slv2_wready(slv2_wready),
-  .slv2_wlast(slv2_wlast),
-  .slv2_wdata(slv2_wdata),
-  .slv2_wstrb(slv2_wstrb),
-  .slv2_wid(slv2_wid),
-  .slv2_bvalid(slv2_bvalid),
-  .slv2_bready(slv2_bready),
-  .slv2_bid(slv2_bid),
-  .slv2_bresp(slv2_bresp),
-  .slv2_arvalid(slv2_arvalid),
-  .slv2_arready(slv2_arready),
-  .slv2_araddr(slv2_araddr),
-  .slv2_arlen(slv2_arlen),
-  .slv2_arsize(slv2_arsize),
-  .slv2_arburst(slv2_arburst),
-  .slv2_arlock(slv2_arlock),
-  .slv2_arid(slv2_arid),
-  .slv2_rvalid(slv2_rvalid),
-  .slv2_rready(slv2_rready),
-  .slv2_rid(slv2_rid),
-  .slv2_rresp(slv2_rresp),
-  .slv2_rdata(slv2_rdata),
-  .slv2_rlast(slv2_rlast)
+  .PRESETn(PRESETn),
+    .PCLK(PCLK),
+    .PSEL(PSEL),
+    .PADDR(PADDR),
+    .PENABLE(PENABLE),
+    .PWRITE(PWRITE),
+    .PWADTA(PWADTA),
+    .PRADTA(PRADTA),
+    .PREADY(PREADY),
+    .low_power_n(low_power_n),
+    .ahb_hgrant(hgrant),
+    .ahb_hrdata(hrdata),
+    .ahb_hready(hready),
+    .ahb_hresp(hresp),
+    .ahb_haddr(haddr),
+    .ahb_hburst(hburst),
+    .ahb_hlock(hlock),
+    .ahb_hsize(hsize),
+    .ahb_htrans(htrans),
+    .ahb_hwdata(hwdata),
+    .ahb_hwrite(hwrite),
+    .ahb_hbusreq(hbusreq)
 );
 //xbar<<<
 
 //axi2ahb>>>
-axi2ahb_bridge_top  axi2ahb_bridge_top_inst (
-    .aclk(aclk),
-    .aresetn(aresetn),
-    .hclk(aclk),
-    .hresetn(aresetn),
-    .awvalid(slv2_awvalid),
-    .awaddr(slv2_awaddr),
-    .awlen(slv2_awlen),
-    .awsize(slv2_awsize),
-    .awburst(slv2_awburst),
-    .awid(slv2_awid),
-    .awready(slv2_awready),
-    .wid(slv2_wid),
-    .wdata(slv2_wdata),
-    .wstrb(slv2_wstrb),
-    .wlast(slv2_wlast),
-    .wvalid(slv2_wvalid),
-    .wready(slv2_wready),
-    .bid(slv2_bid),
-    .bresp(slv2_bresp),
-    .bvalid(slv2_bvalid),
-    .bready(slv2_bready),
-    .arid(slv2_arid),
-    .araddr(slv2_araddr),
-    .arlen(slv2_arlen),
-    .arsize(slv2_arsize),
-    .arburst(slv2_arburst),
-    .arvalid(slv2_arvalid),
-    .arready(slv2_arready),
-    .rid(slv2_rid),
-    .rdata(slv2_rdata),
-    .rresp(slv2_rresp),
-    .rlast(slv2_rlast),
-    .rvalid(slv2_rvalid),
-    .rready(slv2_rready),
-    .haddr(haddr),
-    .htrans(htrans),
-    .hwrite(hwrite),
-    .hsize(hsize),
-    .hburst(hburst),
-    .hwdata(hwdata),
-    .hbusreq(hbusreq),
-    .hlock(hlock),
-    .hrdata(hrdata),
-    .hready(hready),
-    .hresp(hresp),
-    .hgrant(hgrant),
-    .hmaster(hmaster)
-  );
+// axi2ahb_bridge_top  axi2ahb_bridge_top_inst (
+//     .aclk(aclk),
+//     .aresetn(aresetn),
+//     .hclk(aclk),
+//     .hresetn(aresetn),
+//     .awvalid(slv2_awvalid),
+//     .awaddr(slv2_awaddr),
+//     .awlen(slv2_awlen),
+//     .awsize(slv2_awsize),
+//     .awburst(slv2_awburst),
+//     .awid(slv2_awid),
+//     .awready(slv2_awready),
+//     .wid(slv2_wid),
+//     .wdata(slv2_wdata),
+//     .wstrb(slv2_wstrb),
+//     .wlast(slv2_wlast),
+//     .wvalid(slv2_wvalid),
+//     .wready(slv2_wready),
+//     .bid(slv2_bid),
+//     .bresp(slv2_bresp),
+//     .bvalid(slv2_bvalid),
+//     .bready(slv2_bready),
+//     .arid(slv2_arid),
+//     .araddr(slv2_araddr),
+//     .arlen(slv2_arlen),
+//     .arsize(slv2_arsize),
+//     .arburst(slv2_arburst),
+//     .arvalid(slv2_arvalid),
+//     .arready(slv2_arready),
+//     .rid(slv2_rid),
+//     .rdata(slv2_rdata),
+//     .rresp(slv2_rresp),
+//     .rlast(slv2_rlast),
+//     .rvalid(slv2_rvalid),
+//     .rready(slv2_rready),
+//     .haddr(haddr),
+//     .htrans(htrans),
+//     .hwrite(hwrite),
+//     .hsize(hsize),
+//     .hburst(hburst),
+//     .hwdata(hwdata),
+//     .hbusreq(hbusreq),
+//     .hlock(hlock),
+//     .hrdata(hrdata),
+//     .hready(hready),
+//     .hresp(hresp),
+//     .hgrant(hgrant),
+//     .hmaster(hmaster)
+//   );
 //axi2ahb<<<
 
 
@@ -876,8 +874,8 @@ axi_mst_driver # (
     .RCH_W(RCH_W)
   )
   ahb_slv_responder_inst (
-    .hclk(hclk),
-    .hresetn(hresetn),
+    .hclk(aclk),
+    .hresetn(aresetn),
     .haddr(haddr),
     .htrans(htrans),
     .hwrite(hwrite),
@@ -889,8 +887,9 @@ axi_mst_driver # (
     .hrdata(hrdata),
     .hready(hready),
     .hresp(hresp),
-    .hgrant(hgrant),
-    .hmaster(hmaster)
+    .hgrant(hgrant)
+    // ,
+    // .hmaster(hmaster)
   );
   
 //<<<
@@ -1244,6 +1243,13 @@ endtask
 //<<<
 
 //test case>>>k0  -   
+task apb_init();
+PRESETn=1;
+@(negedge aclk);
+PRESETn=0;
+@(negedge aclk);
+PRESETn=1;
+endtask
 task axi_init();
 begin
   aclk=0;
@@ -1669,7 +1675,10 @@ initial begin
 
   //always>>>
 always #(clk_period/2)  aclk = ~ aclk ;
+
   //comb
+assign PCLK=PCLK; 
+
 assign mst0_arlen=mst0_arlen_real[4-1:0];
 assign mst1_arlen=mst1_arlen_real[4-1:0];
 assign mst2_arlen=mst2_arlen_real[4-1:0];
@@ -1684,7 +1693,11 @@ assign mst2_arlen=mst2_arlen_real[4-1:0];
 initial begin
   //init
     test_status=0;
-    axi_init();
+    fork
+      axi_init();
+      apb_init();
+    join
+    
     @(negedge aclk);
 
     aw_req_clr(`MST0);
