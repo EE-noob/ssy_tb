@@ -108,7 +108,7 @@ logic  mst0_srst;
 logic  mst0_awvalid;
 logic  mst0_awready;
 logic   [AXI_ADDR_W    -1:0] mst0_awaddr;
-logic   [4             -1:0] mst0_awlen;
+logic   [8              -1:0] mst0_awlen;
 logic   [3             -1:0] mst0_awsize;
 logic   [2             -1:0] mst0_awburst;
 logic   [2             -1:0] mst0_awlock;
@@ -126,7 +126,7 @@ logic [2             -1:0] mst0_bresp;
 logic  mst0_arvalid;
 logic  mst0_arready;
 logic   [AXI_ADDR_W    -1:0] mst0_araddr;
-logic   [4             -1:0] mst0_arlen;
+logic   [8             -1:0] mst0_arlen;
 logic   [3             -1:0] mst0_arsize;
 logic   [2             -1:0] mst0_arburst;
 logic   [2             -1:0] mst0_arlock;
@@ -143,7 +143,7 @@ logic  mst1_srst;
 logic  mst1_awvalid;
 logic  mst1_awready;
 logic   [AXI_ADDR_W    -1:0] mst1_awaddr;
-logic   [4             -1:0] mst1_awlen;
+logic   [8             -1:0] mst1_awlen;
 logic   [3             -1:0] mst1_awsize;
 logic   [2             -1:0] mst1_awburst;
 logic   [2             -1:0] mst1_awlock;
@@ -178,7 +178,7 @@ logic  mst2_srst;
 logic  mst2_awvalid;
 logic  mst2_awready;
 logic  [AXI_ADDR_W    -1:0] mst2_awaddr;
-logic  [4             -1:0] mst2_awlen;
+logic  [8             -1:0] mst2_awlen;
 logic  [3             -1:0] mst2_awsize;
 logic  [2             -1:0] mst2_awburst;
 logic  [2             -1:0] mst2_awlock;
@@ -196,7 +196,7 @@ logic [2             -1:0] mst2_bresp;
 logic  mst2_arvalid;
 logic  mst2_arready;
 logic   [AXI_ADDR_W    -1:0] mst2_araddr;
-logic   [4             -1:0] mst2_arlen;
+logic   [8             -1:0] mst2_arlen;
 logic   [3             -1:0] mst2_arsize;
 logic   [2             -1:0] mst2_arburst;
 logic   [2             -1:0] mst2_arlock;
@@ -213,7 +213,7 @@ logic  slv0_srst;
 logic  slv0_awvalid;
 logic  slv0_awready;
 logic [AXI_ADDR_W    -1:0] slv0_awaddr;
-logic [4             -1:0] slv0_awlen;
+logic [8             -1:0] slv0_awlen;
 logic [3             -1:0] slv0_awsize;
 logic [2             -1:0] slv0_awburst;
 logic [2             -1:0] slv0_awlock;
@@ -248,7 +248,7 @@ logic  slv1_srst;
 logic  slv1_awvalid;
 logic  slv1_awready;
 logic [AXI_ADDR_W    -1:0] slv1_awaddr;
-logic [4             -1:0] slv1_awlen;
+logic [8             -1:0] slv1_awlen;
 logic [3             -1:0] slv1_awsize;
 logic [2             -1:0] slv1_awburst;
 logic [2             -1:0] slv1_awlock;
@@ -266,7 +266,7 @@ logic   [2             -1:0] slv1_bresp;
 logic  slv1_arvalid;
 logic  slv1_arready;
 logic [AXI_ADDR_W    -1:0] slv1_araddr;
-logic [4             -1:0] slv1_arlen;
+logic [8            -1:0] slv1_arlen;
 logic [3             -1:0] slv1_arsize;
 logic [2             -1:0] slv1_arburst;
 logic [2             -1:0] slv1_arlock;
@@ -283,7 +283,7 @@ logic  slv2_srst;
 logic  slv2_awvalid;
 logic  slv2_awready;
 logic [AXI_ADDR_W    -1:0] slv2_awaddr;
-logic [4             -1:0] slv2_awlen;
+logic [8             -1:0] slv2_awlen;
 logic [3             -1:0] slv2_awsize;
 logic [2             -1:0] slv2_awburst;
 logic [2             -1:0] slv2_awlock;
@@ -301,7 +301,7 @@ logic   [2             -1:0] slv2_bresp;
 logic  slv2_arvalid;
 logic  slv2_arready;
 logic [AXI_ADDR_W    -1:0] slv2_araddr;
-logic [4             -1:0] slv2_arlen;
+logic [8             -1:0] slv2_arlen;
 logic [3             -1:0] slv2_arsize;
 logic [2             -1:0] slv2_arburst;
 logic [2             -1:0] slv2_arlock;
@@ -1693,9 +1693,9 @@ always #(clk_period/2)  aclk = ~ aclk ;
   //comb
 assign PCLK=PCLK; 
 
-assign mst0_arlen=mst0_arlen_real[4-1:0];
-assign mst1_arlen=mst1_arlen_real[4-1:0];
-assign mst2_arlen=mst2_arlen_real[4-1:0];
+assign mst0_arlen=mst0_arlen_real;
+assign mst1_arlen=mst1_arlen_real;
+assign mst2_arlen=mst2_arlen_real;
 
 // assign mst0_awlen=mst0_awlen_real[4-1:0];
 // assign mst1_awlen=mst1_awlen_real[4-1:0];
@@ -1805,8 +1805,7 @@ initial begin
 
 end
 
-//rcv rsp
-
+//rcv rsp  
 // always_ff @( negedge aclk or negedge aresetn ) begin : __err_count
 //   if(!aresetn)
 //     err_count<=testnum;

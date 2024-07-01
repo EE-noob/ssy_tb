@@ -1364,9 +1364,9 @@ initial begin
   //always>>>
 always #(clk_period/2)  aclk = ~ aclk ;
   //comb
-assign mst0_arlen=mst0_arlen_real[4-1:0];
-assign mst1_arlen=mst1_arlen_real[4-1:0];
-assign mst2_arlen=mst2_arlen_real[4-1:0];
+assign mst0_arlen=mst0_arlen_real;
+assign mst1_arlen=mst1_arlen_real;
+assign mst2_arlen=mst2_arlen_real;
 //assign mst0 mst0_awlen_real;
 //main>>>
 

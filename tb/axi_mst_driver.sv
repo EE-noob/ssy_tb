@@ -94,7 +94,8 @@ module axi_mst_driver #(
 
     assign awlen_now=awlen_ram[awlen_rd_ptr];
     assign awid_now=awid_ram[awid_rd_ptr];
-    assign awlen= (in_awlen_real > 15)?15 :in_awlen_real;
+    // assign awlen= (in_awlen_real > 15)?15 :in_awlen_real;
+    assign awlen= in_awlen_real;
     //<<<
 //sequential>>>
 
