@@ -1743,7 +1743,7 @@ initial begin
     test_status=2;
     aw_req(`MST0,`SLV2,wr_req_id,`WRAP,`SLV2_END_ADDR-8,12);
     @(negedge aclk);
-    wait(mst0_arvalid && mst0_arready);
+    wait(mst0_awvalid && mst0_awready);
     //rd_req_id+=1;
     aw_req_clr(`MST0);
 
@@ -1765,7 +1765,7 @@ initial begin
     test_status=4;
     aw_req(`MST0,`SLV2,wr_req_id,`FIXED,`SLV2_START_ADDR+2,8);
     @(negedge aclk);
-    wait(mst0_arvalid && mst0_arready);
+    wait(mst0_awvalid && mst0_awready);
     //rd_req_id+=1;
     aw_req_clr(`MST0);
 
