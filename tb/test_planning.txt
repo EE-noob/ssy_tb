@@ -9,3 +9,7 @@ out of order
 interleaving
 
 （上述行号等于test_status+1）
+
+apb 低功耗写1和0，跑之前的testcase
+
+4k边界处理、mistroute的error读出
