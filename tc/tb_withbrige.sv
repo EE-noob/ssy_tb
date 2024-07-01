@@ -1256,7 +1256,7 @@ PADDR=0;
 PENABLE='b0;
 PWRITE='b0;
 PWADTA='b0;
-PRADTA=0;
+
 
 @(negedge aclk);
 PRESETn=1;
