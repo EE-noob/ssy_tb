@@ -9,6 +9,8 @@ localparam testnum =4 ;
 //localpara half_clk_period=2.5 ;
 //<<<
 // Parameters>>>
+parameter APB_ADDR_WIDTH = 32;
+parameter CONFIG_WIDTH   = 12;
 
 parameter AXI_ID_W   = 4;
 parameter AXI_DATA_W = 32;
@@ -329,22 +331,24 @@ logic		[3:0]		hmaster;
 //axi2ahb<<<
 
 //apb>>>
-logic                       PRESETn,
-logic                       PCLK,
-logic                       PSEL,
-logic [APB_ADDR_WIDTH -1:0] PADDR,
-logic                       PENABLE,
-logic                       PWRITE,
-logic [CONFIG_WIDTH   -1:0] PWADTA,
-logic [CONFIG_WIDTH   -1:0] PRADTA,
-logic                       PREADY,
+logic                       PRESETn;
+logic                       PCLK;
+logic                       PSEL;
+logic [APB_ADDR_WIDTH -1:0] PADDR;
+logic                       PENABLE;
+logic                       PWRITE;
+logic [CONFIG_WIDTH   -1:0] PWADTA;
+logic [CONFIG_WIDTH   -1:0] PRADTA;
+logic                       PREADY;
 
-logic                      low_power_n,
+logic                      low_power_n;
 
 //dut>>>
 
 //xbar>>>
 axi_crossbar_top # (
+  .APB_ADDR_WIDTH(APB_ADDR_WIDTH),
+  .CONFIG_WIDTH(CONFIG_WIDTH),  
   .AXI_ID_W(AXI_ID_W),
   .AXI_DATA_W(AXI_DATA_W),
   .AXI_ADDR_W(AXI_ADDR_W),
@@ -1247,8 +1251,16 @@ task apb_init();
 PRESETn=1;
 @(negedge aclk);
 PRESETn=0;
+PSEL=0;
+PADDR=0;
+PENABLE='b0;
+PWRITE='b0;
+PWADTA='b0;
+PRADTA=0;
+
 @(negedge aclk);
 PRESETn=1;
+@(negedge aclk);
 endtask
 task axi_init();
 begin
@@ -1693,7 +1705,7 @@ assign mst2_arlen=mst2_arlen_real[4-1:0];
 initial begin
   //init
     test_status=0;
-    fork
+    fork: init
       axi_init();
       apb_init();
     join
