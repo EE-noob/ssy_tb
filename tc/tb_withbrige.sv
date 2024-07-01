@@ -15,6 +15,7 @@ parameter CONFIG_WIDTH   = 12;
 parameter AXI_ID_W   = 4;
 parameter AXI_DATA_W = 32;
 parameter AXI_ADDR_W = 32;
+parameter AXI_LEN_W  = 8;
 
 parameter MST_NB     = 3;
 parameter SLV_NB     = 3;
@@ -65,11 +66,12 @@ parameter SLV2_OSTDREQ_SIZE = 8;
 parameter SLV2_PRIORITY = 0;
 
 // Channels' width (concatenated)
-parameter AWCH_W = 47;  //2+2+3+4+4+32
+// Channels' width (concatenated)
+parameter AWCH_W = 51; //2+2+3+8+4+32
 parameter WCH_W  = 40;  //4+32+4
-parameter BCH_W  = 6;   //2+4
-parameter ARCH_W = 47;  //2+2+3+4+4+32
-parameter RCH_W  = 38;  //32+2+4   
+parameter BCH_W  = 6;  //2+4
+parameter ARCH_W = 51;  //2+2+3+8+4+32
+parameter RCH_W  = 38;  //32+2+4     
 //CAM parameters
 parameter CAM_ADDR_WIDTH = 4  ;
 
@@ -346,7 +348,7 @@ logic                      low_power_n;
 //dut>>>
 
 //xbar>>>
-axi_crossbar_top # (
+top_with_bridge # (
   .APB_ADDR_WIDTH(APB_ADDR_WIDTH),
   .CONFIG_WIDTH(CONFIG_WIDTH),  
   .AXI_ID_W(AXI_ID_W),
@@ -1711,29 +1713,76 @@ initial begin
     join
     
     @(negedge aclk);
+    wr_req_id=0;
+    rd_req_id=0;
 
     aw_req_clr(`MST0);
+    @(negedge aclk);
     aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,8);
     @(negedge aclk);
     wait(mst0_awvalid && mst0_awready);
     
-    wr_req_id+=1;
+    //wr_req_id+=1;
     aw_req_clr(`MST0);
-
-    $display("\n *******axi2ahb  INCR write   test finish!!!******* \n");  
+    repeat(100)
+      @(negedge aclk);
+    $display("\n *******test_status=0 ,axi2ahb  INCR write   test finish!!!******* \n");  
     // fixme 用fork join 测试同时读写从机被占用的情况 
     
-    ar_req(`MST0,`SLV0,rd_req_id,`WRAP,`SLV2_END_ADDR-8,12);
+    test_status=1;
+    ar_req(`MST0,`SLV2,rd_req_id,`INCR,`SLV2_START_ADDR+2,8);
     @(negedge aclk);
     wait(mst0_arvalid && mst0_arready);
-    rd_req_id+=1;
+    //rd_req_id+=1;
     ar_req_clr(`MST0);
-    $display("\n *******axi2ahb  WRAP read test finish!!!******* \n");
+
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=1 ,axi2ahb  INCR read test finish!!!******* \n");
+
+    test_status=2;
+    aw_req(`MST0,`SLV2,wr_req_id,`WRAP,`SLV2_END_ADDR-8,12);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    //rd_req_id+=1;
+    aw_req_clr(`MST0);
+
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=2 ,axi2ahb  WRAP write  test finish!!!******* \n");
+
+    test_status=3 ;
+    ar_req(`MST0,`SLV2,rd_req_id,`WRAP,`SLV2_END_ADDR-8,12);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    //rd_req_id+=1;
+    ar_req_clr(`MST0);
+
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=3 ,axi2ahb  WRAP read test finish!!!******* \n");
     
-    aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,8);
+    test_status=4;
+    aw_req(`MST0,`SLV2,wr_req_id,`FIXED,`SLV2_START_ADDR+2,8);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    //rd_req_id+=1;
+    aw_req_clr(`MST0);
 
-    $display("\n *******axi2ahb  INCR test finish!!!******* \n");
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=4 ,axi2ahb  FIXED write test finish!!!******* \n");
 
+    test_status=5 ;
+    ar_req(`MST0,`SLV2,rd_req_id,`WRAP,`SLV2_END_ADDR-8,12);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    //rd_req_id+=1;
+    ar_req_clr(`MST0);
+
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=5 ,axi2ahb  FIXED write test finish!!!******* \n");
     // mst2_or();
     // $display("\n *******axi2ahb  INCR outstanding test finish!!!******* \n");
     repeat(100) @(negedge aclk);
