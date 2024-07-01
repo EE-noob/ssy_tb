@@ -1,6 +1,6 @@
 `include "macro.vh"
 //111112
-module tb_interleaving();
+module tb_withbridge();
 
 //localparam >>>
 
@@ -94,6 +94,7 @@ logic [8-1 :0] mst2_arlen_real;
 
 //<<<
 //Ports>>>
+//xbar>>>
 logic  aclk;
 logic  aresetn;
 logic  srst;
@@ -307,9 +308,31 @@ logic  [AXI_ID_W      -1:0] slv2_rid;
 logic   [2             -1:0] slv2_rresp;
 logic   [AXI_DATA_W    -1:0] slv2_rdata;
 logic  slv2_rlast;
-//<<<
+//xbar<<<
+
+//axi2ahb>>>
+
+logic 		[31:0]		haddr;
+logic 		[1:0]		htrans;
+logic 					hwrite;
+logic 		[2:0]		hsize;
+logic 		[2:0]		hburst;
+logic 	 	[63:0]		hwdata;
+logic 	 				hbusreq;
+logic 					hlock;
+//ahb input
+logic		[63:0]		hrdata;
+logic					hready;
+logic		[1:0]		hresp;
+logic					hgrant;
+logic		[3:0]		hmaster;
+//axi2ahb<<<
+
+
 
 //dut>>>
+
+//xbar>>>
 axi_crossbar_top # (
   .AXI_ID_W(AXI_ID_W),
   .AXI_DATA_W(AXI_DATA_W),
@@ -562,108 +585,163 @@ axi_crossbar_top_inst (
   .slv2_rdata(slv2_rdata),
   .slv2_rlast(slv2_rlast)
 );
-//<<<
+//xbar<<<
+
+//axi2ahb>>>
+axi2ahb_bridge_top  axi2ahb_bridge_top_inst (
+    .aclk(aclk),
+    .aresetn(aresetn),
+    .hclk(aclk),
+    .hresetn(aresetn),
+    .awvalid(slv2_awvalid),
+    .awaddr(slv2_awaddr),
+    .awlen(slv2_awlen),
+    .awsize(slv2_awsize),
+    .awburst(slv2_awburst),
+    .awid(slv2_awid),
+    .awready(slv2_awready),
+    .wid(slv2_wid),
+    .wdata(slv2_wdata),
+    .wstrb(slv2_wstrb),
+    .wlast(slv2_wlast),
+    .wvalid(slv2_wvalid),
+    .wready(slv2_wready),
+    .bid(slv2_bid),
+    .bresp(slv2_bresp),
+    .bvalid(slv2_bvalid),
+    .bready(slv2_bready),
+    .arid(slv2_arid),
+    .araddr(slv2_araddr),
+    .arlen(slv2_arlen),
+    .arsize(slv2_arsize),
+    .arburst(slv2_arburst),
+    .arvalid(slv2_arvalid),
+    .arready(slv2_arready),
+    .rid(slv2_rid),
+    .rdata(slv2_rdata),
+    .rresp(slv2_rresp),
+    .rlast(slv2_rlast),
+    .rvalid(slv2_rvalid),
+    .rready(slv2_rready),
+    .haddr(haddr),
+    .htrans(htrans),
+    .hwrite(hwrite),
+    .hsize(hsize),
+    .hburst(hburst),
+    .hwdata(hwdata),
+    .hbusreq(hbusreq),
+    .hlock(hlock),
+    .hrdata(hrdata),
+    .hready(hready),
+    .hresp(hresp),
+    .hgrant(hgrant),
+    .hmaster(hmaster)
+  );
+//axi2ahb<<<
+
+
+//dut<<<
 
 //mst>>>
-// axi_mst_driver # (
-//     .AXI_ADDR_W(AXI_ADDR_W),
-//     .AXI_ID_W(AXI_ID_W),
-//     .AXI_DATA_W(AXI_DATA_W),
-//     .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-//     .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-//     .AWCH_W(AWCH_W),
-//     .WCH_W(WCH_W),
-//     .BCH_W(BCH_W),
-//     .ARCH_W(ARCH_W),
-//     .RCH_W(RCH_W)
-//   )
-//   axi_mst0_driver_inst (
-//     .aclk(aclk),
-//     .aresetn(aresetn),
-//     .srst(srst),
-//     .in_awvalid(mst0_awvalid),
-//     .in_awready(mst0_awready),
-//     .in_awlen_real(mst0_awlen_real),
-//     .awlen(mst0_awlen),
-//     .in_awid(mst0_awid),
+axi_mst_driver # (
+    .AXI_ADDR_W(AXI_ADDR_W),
+    .AXI_ID_W(AXI_ID_W),
+    .AXI_DATA_W(AXI_DATA_W),
+    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+    .AWCH_W(AWCH_W),
+    .WCH_W(WCH_W),
+    .BCH_W(BCH_W),
+    .ARCH_W(ARCH_W),
+    .RCH_W(RCH_W)
+  )
+  axi_mst0_driver_inst (
+    .aclk(aclk),
+    .aresetn(aresetn),
+    .srst(srst),
+    .in_awvalid(mst0_awvalid),
+    .in_awready(mst0_awready),
+    .in_awlen_real(mst0_awlen_real),
+    .awlen(mst0_awlen),
+    .in_awid(mst0_awid),
     
-//     .out_wvalid(mst0_wvalid),
-//     .in_wready(mst0_wready),
-//     .out_wlast(mst0_wlast),
-//     .out_wid(mst0_wid),
-//     .out_wdata(mst0_wdata),
-//     .out_wstrb(mst0_wstrb),
-//     .narrow(mst0_narrow),
-//     .out_rready(mst0_rready),
-//     .out_bready(mst0_bready)
-//   );
+    .out_wvalid(mst0_wvalid),
+    .in_wready(mst0_wready),
+    .out_wlast(mst0_wlast),
+    .out_wid(mst0_wid),
+    .out_wdata(mst0_wdata),
+    .out_wstrb(mst0_wstrb),
+    .narrow(mst0_narrow),
+    .out_rready(mst0_rready),
+    .out_bready(mst0_bready)
+  );
 
-  // axi_mst_driver # (
-  //   .AXI_ADDR_W(AXI_ADDR_W),
-  //   .AXI_ID_W(AXI_ID_W),
-  //   .AXI_DATA_W(AXI_DATA_W),
-  //   .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-  //   .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-  //   .AWCH_W(AWCH_W),
-  //   .WCH_W(WCH_W),
-  //   .BCH_W(BCH_W),
-  //   .ARCH_W(ARCH_W),
-  //   .RCH_W(RCH_W)
-  // )
-  // axi_mst1_driver_inst (
-  //   .aclk(aclk),
-  //   .aresetn(aresetn),
-  //   .srst(srst),
-  //   .in_awvalid(mst1_awvalid),
-  //   .in_awready(mst1_awready),
-  //   .in_awlen_real(mst1_awlen_real),
-  //   .awlen(mst1_awlen),
-  //   .in_awid(mst1_awid),
+  axi_mst_driver # (
+    .AXI_ADDR_W(AXI_ADDR_W),
+    .AXI_ID_W(AXI_ID_W),
+    .AXI_DATA_W(AXI_DATA_W),
+    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+    .AWCH_W(AWCH_W),
+    .WCH_W(WCH_W),
+    .BCH_W(BCH_W),
+    .ARCH_W(ARCH_W),
+    .RCH_W(RCH_W)
+  )
+  axi_mst1_driver_inst (
+    .aclk(aclk),
+    .aresetn(aresetn),
+    .srst(srst),
+    .in_awvalid(mst1_awvalid),
+    .in_awready(mst1_awready),
+    .in_awlen_real(mst1_awlen_real),
+    .awlen(mst1_awlen),
+    .in_awid(mst1_awid),
   
-  //   .out_wvalid(mst1_wvalid),
-  //   .in_wready(mst1_wready),
-  //   .out_wlast(mst1_wlast),
-  //   .out_wid(mst1_wid),
-  //   .out_wdata(mst1_wdata),
-  //   .out_wstrb(mst1_wstrb),
-  //   .narrow(mst1_narrow),
-  //   .out_rready(mst1_rready),
-  //   .out_bready(mst1_bready)
-  // );
+    .out_wvalid(mst1_wvalid),
+    .in_wready(mst1_wready),
+    .out_wlast(mst1_wlast),
+    .out_wid(mst1_wid),
+    .out_wdata(mst1_wdata),
+    .out_wstrb(mst1_wstrb),
+    .narrow(mst1_narrow),
+    .out_rready(mst1_rready),
+    .out_bready(mst1_bready)
+  );
 
-  // axi_mst_driver # (
-  //   .AXI_ADDR_W(AXI_ADDR_W),
-  //   .AXI_ID_W(AXI_ID_W),
-  //   .AXI_DATA_W(AXI_DATA_W),
-  //   .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-  //   .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-  //   .AWCH_W(AWCH_W),
-  //   .WCH_W(WCH_W),
-  //   .BCH_W(BCH_W),
-  //   .ARCH_W(ARCH_W),
-  //   .RCH_W(RCH_W)
-  // )
-  // axi_mst2_driver_inst (
-  //   .aclk(aclk),
-  //   .aresetn(aresetn),
-  //   .srst(srst),
-  //   .in_awvalid(mst2_awvalid),
-  //   .in_awready(mst2_awready),
-  //   .in_awlen_real(mst2_awlen_real),
-  //   .awlen(mst2_awlen),
-  //   .in_awid(mst2_awid),
+  axi_mst_driver # (
+    .AXI_ADDR_W(AXI_ADDR_W),
+    .AXI_ID_W(AXI_ID_W),
+    .AXI_DATA_W(AXI_DATA_W),
+    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+    .AWCH_W(AWCH_W),
+    .WCH_W(WCH_W),
+    .BCH_W(BCH_W),
+    .ARCH_W(ARCH_W),
+    .RCH_W(RCH_W)
+  )
+  axi_mst2_driver_inst (
+    .aclk(aclk),
+    .aresetn(aresetn),
+    .srst(srst),
+    .in_awvalid(mst2_awvalid),
+    .in_awready(mst2_awready),
+    .in_awlen_real(mst2_awlen_real),
+    .awlen(mst2_awlen),
+    .in_awid(mst2_awid),
 
-  //   .out_wvalid(mst2_wvalid),
-  //   .in_wready(mst2_wready),
-  //   .out_wlast(mst2_wlast),
-  //   .out_wid(mst2_wid),
-  //   .out_wdata(mst2_wdata),
-  //   .out_wstrb(mst2_wstrb),
-  //   .narrow(mst2_narrow),
-  //   .out_rready(mst2_rready),
-  //   .out_bready(mst2_bready)
-  // );
-//<<<
+    .out_wvalid(mst2_wvalid),
+    .in_wready(mst2_wready),
+    .out_wlast(mst2_wlast),
+    .out_wid(mst2_wid),
+    .out_wdata(mst2_wdata),
+    .out_wstrb(mst2_wstrb),
+    .narrow(mst2_narrow),
+    .out_rready(mst2_rready),
+    .out_bready(mst2_bready)
+  );
+//mst<<<
 
 //slv>>>
   axi_slv_responder # (
@@ -746,7 +824,46 @@ axi_crossbar_top_inst (
     .out_rlast(slv1_rlast)  
   );
 
-  axi_slv_responder # (
+  // axi_slv_responder # (
+  //   .AXI_ADDR_W(AXI_ADDR_W),
+  //   .AXI_ID_W(AXI_ID_W),
+  //   .AXI_DATA_W(AXI_DATA_W),
+  //   .SLV_OSTDREQ_NUM(SLV2_OSTDREQ_NUM),
+  //   .SLV_OSTDREQ_SIZE(SLV2_OSTDREQ_SIZE),
+  //   .AWCH_W(AWCH_W),
+  //   .WCH_W(WCH_W),
+  //   .BCH_W(BCH_W),
+  //   .ARCH_W(ARCH_W),
+  //   .RCH_W(RCH_W)
+  // )
+  // axi_slv2_responder_inst (
+  //   .aclk(aclk),
+  //   .aresetn(aresetn),
+  //   .srst(srst),
+  //   .out_awready(slv2_awready),
+  //   .in_wvalid(slv2_wvalid),
+  //   .out_wready(slv2_wready),
+  //   .in_wlast(slv2_wlast),
+  //   .in_wid(slv2_wid),
+  //   .out_bvalid(slv2_bvalid),
+  //   .in_bready(slv2_bready),
+  //   .out_bid(slv2_bid),
+  //   .out_bresp(slv2_bresp),
+
+  //   .in_arvalid(slv2_arvalid),
+  //   .out_arready(slv2_arready),
+  //   .in_arlen(slv2_arlen_real),
+  //   .in_arid(slv2_arid),
+  //   .out_rvalid(slv2_rvalid),
+  //   .out_rresp(slv2_rresp),
+  //   .in_rready(slv2_rready),
+
+  //   .out_rid(slv2_rid),
+  //   .out_rdata(slv2_rdata),
+  //   .out_rlast(slv2_rlast)  
+  // );
+  ahb_slv_responder # (
+    .always_ready(0),
     .AXI_ADDR_W(AXI_ADDR_W),
     .AXI_ID_W(AXI_ID_W),
     .AXI_DATA_W(AXI_DATA_W),
@@ -758,32 +875,24 @@ axi_crossbar_top_inst (
     .ARCH_W(ARCH_W),
     .RCH_W(RCH_W)
   )
-  axi_slv2_responder_inst (
-    .aclk(aclk),
-    .aresetn(aresetn),
-    .srst(srst),
-    .out_awready(slv2_awready),
-    .in_wvalid(slv2_wvalid),
-    .out_wready(slv2_wready),
-    .in_wlast(slv2_wlast),
-    .in_wid(slv2_wid),
-    .out_bvalid(slv2_bvalid),
-    .in_bready(slv2_bready),
-    .out_bid(slv2_bid),
-    .out_bresp(slv2_bresp),
-
-    .in_arvalid(slv2_arvalid),
-    .out_arready(slv2_arready),
-    .in_arlen(slv2_arlen_real),
-    .in_arid(slv2_arid),
-    .out_rvalid(slv2_rvalid),
-    .out_rresp(slv2_rresp),
-    .in_rready(slv2_rready),
-
-    .out_rid(slv2_rid),
-    .out_rdata(slv2_rdata),
-    .out_rlast(slv2_rlast)  
+  ahb_slv_responder_inst (
+    .hclk(hclk),
+    .hresetn(hresetn),
+    .haddr(haddr),
+    .htrans(htrans),
+    .hwrite(hwrite),
+    .hsize(hsize),
+    .hburst(hburst),
+    .hwdata(hwdata),
+    .hbusreq(hbusreq),
+    .hlock(hlock),
+    .hrdata(hrdata),
+    .hready(hready),
+    .hresp(hresp),
+    .hgrant(hgrant),
+    .hmaster(hmaster)
   );
+  
 //<<<
 
 //task>>>
@@ -1134,7 +1243,7 @@ end
 endtask
 //<<<
 
-//test case>>>
+//test case>>>k0  -   
 task axi_init();
 begin
   aclk=0;
@@ -1178,11 +1287,10 @@ begin
 end
 endtask
 
-
 task mst0_or();
 begin
   wr_req_id=0;
-  rd_req_id=0;
+  rd_req_id=0; 
 
     repeat(testnum)begin
       aw_INCR_req_random(`MST0,`SLV0,wr_req_id);
@@ -1196,6 +1304,31 @@ begin
      repeat(testnum)begin
       ar_INCR_req_random(`MST0,`SLV0,rd_req_id);
       wait(mst0_arvalid && mst0_arready);
+      @(negedge aclk);
+      rd_req_id+=1;
+    end
+
+     ar_req_clr(`MST0);
+end
+endtask
+
+task mst2_or();
+begin
+  wr_req_id=0;
+  rd_req_id=0; 
+
+    repeat(testnum)begin
+      aw_INCR_req_random(`MST2,`SLV2,wr_req_id);
+      wait(mst2_awvalid && mst2_awready);
+      @(negedge aclk);
+      wr_req_id+=1;
+    end
+
+     aw_req_clr(`MST2);
+     
+     repeat(testnum)begin
+      ar_INCR_req_random(`MST2,`SLV2,rd_req_id);
+      wait(mst2_arvalid && mst2_arready);
       @(negedge aclk);
       rd_req_id+=1;
     end
@@ -1541,9 +1674,9 @@ assign mst0_arlen=mst0_arlen_real[4-1:0];
 assign mst1_arlen=mst1_arlen_real[4-1:0];
 assign mst2_arlen=mst2_arlen_real[4-1:0];
 
-assign mst0_awlen=mst0_awlen_real[4-1:0];
-assign mst1_awlen=mst1_awlen_real[4-1:0];
-assign mst2_awlen=mst2_awlen_real[4-1:0];
+// assign mst0_awlen=mst0_awlen_real[4-1:0];
+// assign mst1_awlen=mst1_awlen_real[4-1:0];
+// assign mst2_awlen=mst2_awlen_real[4-1:0];
 //assign mst0 mst0_awlen_real;
 //main>>>
 
@@ -1551,24 +1684,43 @@ assign mst2_awlen=mst2_awlen_real[4-1:0];
 initial begin
   //init
     test_status=0;
-    driver_init();
     axi_init();
     @(negedge aclk);
 
-    out_of_order();
-    $display("\n *******wr out of order test finish!!!******* \n");
+    aw_req_clr(`MST0);
+    aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,8);
+    @(negedge aclk);
+    wait(mst0_awvalid && mst0_awready);
+    
+    wr_req_id+=1;
+    aw_req_clr(`MST0);
+
+    $display("\n *******axi2ahb  INCR write   test finish!!!******* \n");  
+    // fixme 用fork join 测试同时读写从机被占用的情况 
+    
+    ar_req(`MST0,`SLV0,rd_req_id,`WRAP,`SLV2_END_ADDR-8,12);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    rd_req_id+=1;
+    ar_req_clr(`MST0);
+    $display("\n *******axi2ahb  WRAP read test finish!!!******* \n");
+    
+    aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,8);
+
+    $display("\n *******axi2ahb  INCR test finish!!!******* \n");
+
+    // mst2_or();
+    // $display("\n *******axi2ahb  INCR outstanding test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
-
-    interleaving();
-    $display("\n *******wr interleaving test finish!!!******* \n");
-    repeat(100) @(negedge aclk);
-
+    // out_of_order();
+    // $display("\n *******wr out of order test finish!!!******* \n");
+    // repeat(100) @(negedge aclk);
 
 
-
-
-
+    // interleaving();
+    // $display("\n *******wr interleaving test finish!!!******* \n");
+    // repeat(100) @(negedge aclk);
 
     $display("****************************************************************");
     $display ("*******all test case task done!!!!! at time %t*******", $time);
@@ -1591,9 +1743,9 @@ end
   always_ff @( negedge aclk or negedge aresetn ) begin : __wr_rsp_success_cnt
     if(!aresetn)
       wr_rsp_success_cnt<=testnum;
-    else if(mst0_bready && mst0_bvalid)
+    else if(mst2_bready && mst2_bvalid)
       begin
-        //$display("number %d wr_rsp recived successfully!!!",testnum-wr_rsp_success_cnt);
+        $display("number %d wr_rsp recived successfully!!!",testnum-wr_rsp_success_cnt);
         wr_rsp_success_cnt<=wr_rsp_success_cnt -1;
       end
     end
