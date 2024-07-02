@@ -1812,13 +1812,13 @@ initial begin
     $display("\n *******test_status=3 ,axi2ahb  WRAP read test finish!!!******* \n");
     
     test_status=4;
-    aw_req(`MST0,`SLV2,wr_req_id,`FIXED,`SLV2_START_ADDR+2,8);
+    aw_req(`MST0,`SLV2,wr_req_id,`FIXED,`SLV2_START_ADDR+2,7);
     @(negedge aclk);
     wait(mst0_awvalid && mst0_awready);
     //rd_req_id+=1;
     aw_req_clr(`MST0);
 
-    repeat(100)
+    repeat(100) 
     @(negedge aclk);
     $display("\n *******test_status=4 ,axi2ahb  FIXED write test finish!!!******* \n");
 
