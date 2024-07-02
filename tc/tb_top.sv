@@ -1132,6 +1132,22 @@ endtask
 //<<<
 
 //test case>>>
+task apb_init();
+PRESETn=1;
+@(negedge aclk);
+PRESETn=0;
+PSEL=0;
+PADDR=0;
+PENABLE='b0;
+PWRITE='b0;
+PWADTA='b0;
+
+
+@(negedge aclk);
+PRESETn=1;
+@(negedge aclk);
+endtask
+
 task axi_init();
 begin
   aclk=0;
@@ -1434,8 +1450,10 @@ assign mst2_arlen=mst2_arlen_real;
 initial begin
 
     test_status=0;
-    axi_init();
-    
+    fork: init
+      axi_init();
+      apb_init();
+    join
     test_status=1;
     mst0_or();
     $display("\n *******outstanding test finish!!!******* \n");

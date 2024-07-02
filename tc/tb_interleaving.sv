@@ -1196,6 +1196,22 @@ endtask
 //<<<
 
 //test case>>>
+task apb_init();
+PRESETn=1;
+@(negedge aclk);
+PRESETn=0;
+PSEL=0;
+PADDR=0;
+PENABLE='b0;
+PWRITE='b0;
+PWADTA='b0;
+
+
+@(negedge aclk);
+PRESETn=1;
+@(negedge aclk);
+endtask
+
 task axi_init();
 begin
   aclk=0;

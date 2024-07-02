@@ -1802,8 +1802,8 @@ initial begin
 
     test_status=3 ;
     ar_req(`MST0,`SLV2,rd_req_id,`WRAP,`SLV2_END_ADDR-5,7);
-    @(negedge aclk);
-    wait(mst0_arvalid && mst0_arready);
+    @(negedge aclk); 
+    wait(mst0_arvalid && mst0_arready); 
     //rd_req_id+=1;
     ar_req_clr(`MST0);
 
@@ -1823,7 +1823,7 @@ initial begin
     $display("\n *******test_status=4 ,axi2ahb  FIXED write test finish!!!******* \n");
 
     test_status=5 ;
-    ar_req(`MST0,`SLV2,rd_req_id,`WRAP,`SLV2_END_ADDR-18,12);
+    ar_req(`MST0,`SLV2,rd_req_id,`FIXED,`SLV2_END_ADDR-18,12);
     @(negedge aclk);
     wait(mst0_arvalid && mst0_arready);
     //rd_req_id+=1;
