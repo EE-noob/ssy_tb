@@ -242,8 +242,8 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
 always @( posedge hclk or negedge hresetn) begin : __rdata//!!!fixme!!!can't syn 考虑prbs
     if(!hresetn )
         hrdata<= 'b0;
-    else if(!hwrite && htrans==(`NONSEQ || `SEQ) && hready)
-        hrdata<= $random;
+    else if(!hwrite &&( (htrans==`NONSEQ) || (htrans==`SEQ)) && hready)
+        hrdata<= hrdata+1;
 end
 
 always_ff @( posedge hclk or negedge hresetn) begin : __hready

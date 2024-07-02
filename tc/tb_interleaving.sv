@@ -9,6 +9,8 @@ localparam testnum =4 ;
 //localpara half_clk_period=2.5 ;
 //<<<
 // Parameters>>>
+parameter APB_ADDR_WIDTH = 32;
+parameter CONFIG_WIDTH   = 12;
 
 parameter AXI_ID_W   = 4;
 parameter AXI_DATA_W = 32;
@@ -107,7 +109,7 @@ logic   [8             -1:0] mst0_awlen;
 logic   [3             -1:0] mst0_awsize;
 logic   [2             -1:0] mst0_awburst;
 logic   [2             -1:0] mst0_awlock;
-logic   [AXI_ID_W      -1:0] mst0_awid;
+logic   [AXI_ID_W      -1:0] mst0_awid  ;
 logic  mst0_wvalid;
 logic  mst0_wready;
 logic  mst0_wlast;
@@ -299,7 +301,7 @@ logic [AXI_ADDR_W    -1:0] slv2_araddr;
 logic [8             -1:0] slv2_arlen;
 logic [3             -1:0] slv2_arsize;
 logic [2             -1:0] slv2_arburst;
-logic [2             -1:0] slv2_arlock;
+logic [2             -1:0] slv2_arlock; 
 logic [AXI_ID_W      -1:0] slv2_arid;
 logic  slv2_rvalid;
 logic  slv2_rready;
@@ -307,6 +309,22 @@ logic  [AXI_ID_W      -1:0] slv2_rid;
 logic   [2             -1:0] slv2_rresp;
 logic   [AXI_DATA_W    -1:0] slv2_rdata;
 logic  slv2_rlast;
+
+//apb>>>
+logic                       PRESETn;
+logic                       PCLK;
+logic                       PSEL;
+logic [APB_ADDR_WIDTH -1:0] PADDR;
+logic                       PENABLE;
+logic                       PWRITE;
+logic [CONFIG_WIDTH   -1:0] PWADTA;
+logic [CONFIG_WIDTH   -1:0] PRADTA;
+logic                       PREADY;
+
+logic                      low_power_n;
+
+//apb<<<
+
 //<<<
 
 //dut>>>
@@ -787,6 +805,49 @@ axi_crossbar_top_inst (
 //<<<
 
 //task>>>
+  task apb_wr(input [APB_ADDR_WIDTH -1:0] addr,input logic [CONFIG_WIDTH   -1:0] wdata);
+  begin
+    PADDR=addr;
+    PWRITE=1;
+    PSEL=1;
+    PWADTA=wdata;
+    PENABLE=0;  
+    @(negedge aclk);
+  
+    PENABLE=1;
+    @(negedge aclk);
+    PADDR='b0;
+    PWRITE=1;
+    PSEL=0;
+    PWADTA='b0;
+    PENABLE=0; 
+    PENABLE=0;
+  
+  end
+  endtask
+  
+  task apb_rd(input [APB_ADDR_WIDTH -1:0] addr,output logic [CONFIG_WIDTH   -1:0] rdata);
+  begin
+    PADDR=addr;
+    PWRITE=0;
+    PSEL=1;
+    PENABLE=0;  
+    @(negedge aclk);
+  
+    PENABLE=1;
+    @(posedge aclk);
+    rdata=PRADTA;
+    @(negedge aclk);
+    PADDR='b0;
+    PWRITE=0;
+    PSEL=0;
+    //PWADTA='b0;
+    PENABLE=0; 
+    PENABLE=0;
+  
+  end
+  endtask
+  
 task aw_req_clr(
     input [1:0] mst_id
 );  

@@ -345,6 +345,8 @@ logic                       PREADY;
 
 logic                      low_power_n;
 
+//apb<<<
+
 //dut>>>
 
 //xbar>>>
@@ -901,6 +903,49 @@ axi_mst_driver # (
 //<<<
 
 //task>>>
+task apb_wr(input [APB_ADDR_WIDTH -1:0] addr,input logic [CONFIG_WIDTH   -1:0] wdata);
+begin
+  PADDR=addr;
+  PWRITE=1;
+  PSEL=1;
+  PWADTA=wdata;
+  PENABLE=0;  
+  @(negedge aclk);
+
+  PENABLE=1;
+  @(negedge aclk);
+  PADDR='b0;
+  PWRITE=1;
+  PSEL=0;
+  PWADTA='b0;
+  PENABLE=0; 
+  PENABLE=0;
+
+end
+endtask
+
+task apb_rd(input [APB_ADDR_WIDTH -1:0] addr,output logic [CONFIG_WIDTH   -1:0] rdata);
+begin
+  PADDR=addr;
+  PWRITE=0;
+  PSEL=1;
+  PENABLE=0;  
+  @(negedge aclk);
+
+  PENABLE=1;
+  @(posedge aclk);
+  rdata=PRADTA;
+  @(negedge aclk);
+  PADDR='b0;
+  PWRITE=0;
+  PSEL=0;
+  //PWADTA='b0;
+  PENABLE=0; 
+  PENABLE=0;
+
+end
+endtask
+
 task aw_req_clr(
     input [1:0] mst_id
 );  
@@ -1247,6 +1292,7 @@ endcase
 end
 endtask
 //<<<
+
 
 //test case>>>k0  -   
 task apb_init();
@@ -1697,6 +1743,7 @@ assign mst0_arlen=mst0_arlen_real;
 assign mst1_arlen=mst1_arlen_real;
 assign mst2_arlen=mst2_arlen_real;
 
+
 // assign mst0_awlen=mst0_awlen_real[4-1:0];
 // assign mst1_awlen=mst1_awlen_real[4-1:0];
 // assign mst2_awlen=mst2_awlen_real[4-1:0];
@@ -1706,12 +1753,14 @@ assign mst2_arlen=mst2_arlen_real;
 //send req
 initial begin
   //init
+
+
     test_status=0;
     fork: init
       axi_init();
       apb_init();
     join
-    
+    apb_wr(0,{1'b1,{11{1'b0}}});
     @(negedge aclk);
     wr_req_id=0;
     rd_req_id=0;
