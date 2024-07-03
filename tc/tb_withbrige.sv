@@ -1806,6 +1806,7 @@ initial begin
 
   if(interrupt_valid==3'b001)
   begin
+    @(negedge aclk);
     apb_rd(0,e_data);
   end
 
@@ -1817,6 +1818,7 @@ initial begin
       wait(interrupt_valid!=0);
       if(interrupt_valid==3'b001)
   begin
+    @(negedge aclk);
     apb_rd(0,e_data);
   end
 
