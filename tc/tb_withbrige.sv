@@ -1804,7 +1804,7 @@ assign mst2_arlen=mst2_arlen_real;
 initial begin
   wait(interrupt_valid!=0);
 
-  if(interrupt_valid==3'b100)
+  if(interrupt_valid==3'b001)
   begin
     apb_rd(0,e_data);
   end
@@ -1815,7 +1815,7 @@ initial begin
       $display("\n%0t e_data=%b  !!!!!!test_status=6 ,4kBound_burst detect error!!!!!! \n",$time,e_data);
 
       wait(interrupt_valid!=0);
-      if(interrupt_valid==3'b100)
+      if(interrupt_valid==3'b001)
   begin
     apb_rd(0,e_data);
   end
