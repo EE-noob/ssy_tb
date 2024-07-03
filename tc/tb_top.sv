@@ -1454,6 +1454,7 @@ initial begin
       axi_init();
       apb_init();
     join
+    
     test_status=1;
     mst0_or();
     $display("\n *******outstanding test finish!!!******* \n");
@@ -1464,7 +1465,7 @@ initial begin
     $display("\n *******narrow test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
-    test_status=3;
+    test_status=3; 
     mst0_256_burst();
     $display("\n *******256 length burst test finish!!!******* \n");
     repeat(500) @(negedge aclk);
@@ -1486,7 +1487,7 @@ initial begin
 
     test_status=7;
     mst0_4kBound_burst();
-     
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
     test_status=8;

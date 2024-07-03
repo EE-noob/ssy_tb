@@ -31,3 +31,7 @@
 `define BUSY    2'b01
 `define NONSEQ  2'b10
 `define SEQ     2'b11
+
+`define bondary     2'b01
+`define misroute    2'b10
+`define AHBerror    2'b11

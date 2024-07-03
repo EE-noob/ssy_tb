@@ -1,3 +1,4 @@
+//axi 3
 `define FIXED    2'b00
 `define INCR     2'b01
 `define WRAP     2'b10
@@ -24,3 +25,13 @@
 `define MST0 2'b01
 `define MST1 2'b10
 `define MST2 2'b11
+
+//ahb
+`define IDLE    2'b00
+`define BUSY    2'b01
+`define NONSEQ  2'b10
+`define SEQ     2'b11
+
+`define bondary     2'b01
+`define misroute    2'b10
+`define AHBerror    2'b11

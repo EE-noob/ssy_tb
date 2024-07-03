@@ -15,7 +15,7 @@ apb 低功耗写1和0，跑之前的testcase
 4k边界处理、mistroute的error读出
 
 APB Config:
-{ID(8bits)， Error(2bits),  valid(1bits)，Low_power(1bits)}
+little endian{ID(8bits)， Error(2bits),  valid(1bits)，Low_power(1bits)}big endian
 Error:   4K bondary 01;
             misroute      10;
             AHB error    11.

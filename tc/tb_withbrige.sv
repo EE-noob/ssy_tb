@@ -10,7 +10,7 @@ localparam testnum =4 ;
 //<<<
 // Parameters>>>
 parameter APB_ADDR_WIDTH = 32;
-parameter CONFIG_WIDTH   = 12;
+parameter CONFIG_WIDTH   = 8;
 
 parameter AXI_ID_W   = 4;
 parameter AXI_DATA_W = 32;
@@ -95,10 +95,16 @@ logic [8-1 :0] mst0_arlen_real;
 logic [8-1 :0] mst1_arlen_real;
 logic [8-1 :0] mst2_arlen_real;
 
+logic [8-1:0] e_data;
+//little endian{ID(8bits)， Error(2bits),  valid(1bits)，Low_power(1bits)}big endian
+// Error:   4K bondary 01;
+// misroute      10;
+// AHB error    11.
 
 //<<<
 //Ports>>>
 //xbar>>>
+logic  [MST_NB           -1:0] interrupt_valid;
 logic  aclk;
 logic  aresetn;
 logic  srst;
@@ -390,6 +396,7 @@ top_with_bridge # (
   .CAM_ADDR_WIDTH(CAM_ADDR_WIDTH)
 )
 axi_crossbar_top_inst (
+  .interrupt_valid(interrupt_valid),
   .aclk(aclk),
   .aresetn(aresetn),
   .srst(srst),
@@ -1569,6 +1576,28 @@ begin
 end
 endtask
 
+task mst0_wr_4kBound_burst();
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
+
+    
+  aw_req(`MST0,`SLV0,wr_req_id,`INCR,4090,7);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  
+  wr_req_id+=1;
+  aw_req_clr(`MST0);
+  
+  // ar_req(`MST0,`SLV0,rd_req_id,`INCR,4090,7);
+  // @(negedge aclk);
+  // wait(mst0_arvalid && mst0_arready);
+  // rd_req_id+=1;
+  // ar_req_clr(`MST0);
+end
+endtask
+
 task mst0_mistroute();
 begin
   mst0_narrow=0;
@@ -1591,6 +1620,27 @@ begin
 end
 endtask
 
+task mst0_wr_mistroute();
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
+
+    
+  aw_req(`MST0,2'b11,wr_req_id,`INCR,12287+32,7);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  
+  wr_req_id+=1;
+  aw_req_clr(`MST0);
+  
+  // ar_req(`MST0,2'b11,rd_req_id,`INCR,12287+32,7);
+  // @(negedge aclk);
+  // wait(mst0_arvalid && mst0_arready);
+  // rd_req_id+=1;
+  // ar_req_clr(`MST0);
+end
+endtask
 
 task out_of_order();
 begin
@@ -1737,7 +1787,7 @@ initial begin
 always #(clk_period/2)  aclk = ~ aclk ;
 
   //comb
-assign PCLK=PCLK; 
+assign PCLK=aclk; 
 
 assign mst0_arlen=mst0_arlen_real;
 assign mst1_arlen=mst1_arlen_real;
@@ -1751,6 +1801,35 @@ assign mst2_arlen=mst2_arlen_real;
 //main>>>
 
 //send req
+initial begin
+  wait(interrupt_valid!=0);
+
+  if(interrupt_valid==3'b100)
+  begin
+    apb_rd(0,e_data);
+  end
+
+    if(e_data[5:4]==`bondary)
+      $display("\ne_data=%b *******test_status=6 ,4kBound_burst detect success******* \n",e_data);
+    else
+      $display("\n%0t e_data=%b  !!!!!!test_status=6 ,4kBound_burst detect error!!!!!! \n",$time,e_data);
+
+      wait(interrupt_valid!=0);
+      if(interrupt_valid==3'b100)
+  begin
+    apb_rd(0,e_data);
+  end
+
+    if(e_data[5:4]==`misroute )
+      $display("\ne_data=%b *******test_status=7 ,4kBound_burst detect success******* \n",e_data);
+    else
+      $display("\n%0te_data=%b  !!!!!!test_status=7 ,4kBound_burst detect error!!!!!! \n",$time,e_data);
+
+  
+  
+end
+
+
 initial begin
   //init
 
@@ -1836,6 +1915,15 @@ initial begin
     // $display("\n *******axi2ahb  INCR outstanding test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
+    test_status=6;
+    mst0_wr_4kBound_burst();
+    $display("\n *******test_status=6 ,4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=7;
+    mst0_wr_mistroute();
+    $display("\n *******test_status=7 ,mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
     // out_of_order();
     // $display("\n *******wr out of order test finish!!!******* \n");
     // repeat(100) @(negedge aclk);
