@@ -941,7 +941,7 @@ begin
 
   PENABLE=1;
   @(posedge aclk);
-  rdata=PRADTA;
+  #1 rdata=PRADTA;
   @(negedge aclk);
   PADDR='b0;
   PWRITE=0;
