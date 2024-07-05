@@ -786,7 +786,7 @@ axi_mst_driver # (
 
     .in_arvalid(slv0_arvalid),
     .out_arready(slv0_arready),
-    .in_arlen(slv0_arlen_real),
+    .in_arlen(slv0_arlen),
     .in_arid(slv0_arid),
     .out_rvalid(slv0_rvalid),
     .out_rresp(slv0_rresp),
@@ -798,9 +798,9 @@ axi_mst_driver # (
   );
 
   axi_slv_responder # (
-    .ALWAYS_READY(1),
+    .ALWAYS_READY(1),  
     .AXI_ADDR_W(AXI_ADDR_W),
-    .AXI_ID_W(AXI_ID_W),
+    .AXI_ID_W(AXI_ID_W), 
     .AXI_DATA_W(AXI_DATA_W),
     .SLV_OSTDREQ_NUM(SLV0_OSTDREQ_NUM),
     .SLV_OSTDREQ_SIZE(SLV0_OSTDREQ_SIZE),
@@ -826,7 +826,7 @@ axi_mst_driver # (
 
     .in_arvalid(slv1_arvalid),
     .out_arready(slv1_arready),
-    .in_arlen(slv1_arlen_real),
+    .in_arlen(slv1_arlen),
     .in_arid(slv1_arid),
     .out_rvalid(slv1_rvalid),
     .out_rresp(slv1_rresp),
@@ -1800,7 +1800,7 @@ assign mst2_arlen=mst2_arlen_real;
 //assign mst0 mst0_awlen_real;
 //main>>>
 
-//send req
+//apb error detect>>>
 initial begin
   wait(interrupt_valid!=0);
 
@@ -1830,22 +1830,27 @@ initial begin
   
   
 end
-
+//<<<
 
 initial begin
   //init
 
 
-    test_status=0;
+    
     fork: init
       axi_init();
       apb_init();
     join
+
+    
     apb_wr(0,{1'b1,{11{1'b0}}});
     @(negedge aclk);
     wr_req_id=0;
     rd_req_id=0;
 
+    //case 0~5 burst read/write brige>>>
+    test_status=0; 
+     
     aw_req_clr(`MST0);
     @(negedge aclk);
     aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
@@ -1855,7 +1860,7 @@ initial begin
     //wr_req_id+=1;
     aw_req_clr(`MST0);
     repeat(100)
-      @(negedge aclk);
+    @(negedge aclk);
     $display("\n *******test_status=0 ,axi2ahb  INCR write   test finish!!!******* \n");  
     // fixme 用fork join 测试同时读写从机被占用的情况 
     
@@ -1910,13 +1915,14 @@ initial begin
     //rd_req_id+=1;
     ar_req_clr(`MST0);
 
-    repeat(100)
+    repeat(100)  
     @(negedge aclk);
     $display("\n *******test_status=5 ,axi2ahb  FIXED read test finish!!!******* \n");
     // mst2_or();
     // $display("\n *******axi2ahb  INCR outstanding test finish!!!******* \n");
     repeat(100) @(negedge aclk);
-
+//case 0~5 burst read/write brige <<<
+    //case 6~7 error detect brige >>>
     test_status=6;
     mst0_wr_4kBound_burst();
     $display("\n *******test_status=6 ,4kBound_burst burst test finish!!!******* \n");
@@ -1926,14 +1932,96 @@ initial begin
     mst0_wr_mistroute();
     $display("\n *******test_status=7 ,mistroute test finish!!!******* \n");
     repeat(100) @(negedge aclk);
-    // out_of_order();
-    // $display("\n *******wr out of order test finish!!!******* \n");
-    // repeat(100) @(negedge aclk);
 
 
-    // interleaving();
-    // $display("\n *******wr interleaving test finish!!!******* \n");
-    // repeat(100) @(negedge aclk);
+    //case 6~7 error detect brige <<<
+
+    
+    // test_status=8;
+    // mst2_or();
+    // $display("\n *******test_status=8 ,brige outstanding test finish!!!******* \n");
+    // repeat(200) @(negedge aclk);
+
+//case 9~14  read/write error test >>>
+    test_status=9; 
+     
+    aw_req_clr(`MST0);
+    @(negedge aclk);
+    aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
+    wait(mst0_awvalid && mst0_awready);
+        //wr_req_id+=1;
+    aw_req_clr(`MST0);
+
+    @(negedge aclk);
+    wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridge.ahb_htrans==2)
+    @(negedge aclk);@(negedge aclk);
+    force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridge.ahb_hresp=2'b01;
+    @(negedge aclk);@(negedge aclk);
+    release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridge.ahb_hresp;
+
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=0 ,axi2ahb  INCR write   test finish!!!******* \n");  
+    // fixme 用fork join 测试同时读写从机被占用的情况 
+    
+    test_status=1;
+    ar_req(`MST0,`SLV2,rd_req_id,`INCR,`SLV2_START_ADDR+2,7);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    //rd_req_id+=1;
+    ar_req_clr(`MST0);
+
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=1 ,axi2ahb  INCR read test finish!!!******* \n");
+
+    test_status=2;
+    aw_req(`MST0,`SLV2,wr_req_id,`WRAP,`SLV2_END_ADDR-5,7);
+    @(negedge aclk);
+    wait(mst0_awvalid && mst0_awready);
+    //rd_req_id+=1;
+    aw_req_clr(`MST0);
+
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=2 ,axi2ahb  WRAP write  test finish!!!******* \n");
+
+    test_status=3 ;
+    ar_req(`MST0,`SLV2,rd_req_id,`WRAP,`SLV2_END_ADDR-5,7);
+    @(negedge aclk); 
+    wait(mst0_arvalid && mst0_arready); 
+    //rd_req_id+=1;
+    ar_req_clr(`MST0);
+
+    repeat(100)
+    @(negedge aclk);
+    $display("\n *******test_status=3 ,axi2ahb  WRAP read test finish!!!******* \n");
+    
+    test_status=4;
+    aw_req(`MST0,`SLV2,wr_req_id,`FIXED,`SLV2_START_ADDR+2,7);
+    @(negedge aclk);
+    wait(mst0_awvalid && mst0_awready);
+    //rd_req_id+=1;
+    aw_req_clr(`MST0);
+
+    repeat(100) 
+    @(negedge aclk);
+    $display("\n *******test_status=4 ,axi2ahb  FIXED write test finish!!!******* \n");
+
+    test_status=5 ;
+    ar_req(`MST0,`SLV2,rd_req_id,`FIXED,`SLV2_END_ADDR-18,12);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    //rd_req_id+=1;
+    ar_req_clr(`MST0);
+
+    repeat(100)  
+    @(negedge aclk);
+    $display("\n *******test_status=5 ,axi2ahb  FIXED read test finish!!!******* \n");
+    // mst2_or();
+    // $display("\n *******axi2ahb  INCR outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+//case 0~5 burst read/write brige <<<
 
     $display("****************************************************************");
     $display ("*******all test case task done!!!!! at time %t*******", $time);

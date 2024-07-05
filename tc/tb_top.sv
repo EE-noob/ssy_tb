@@ -1388,7 +1388,147 @@ begin
 end
 endtask
 //<<<
+//test case for cov>>>
+task outstanding(input [1:0]mstID, input [1:0]slvID);
+begin
+  wr_req_id=0;
+    rd_req_id=0;
 
+    repeat(testnum)begin
+      aw_INCR_req_random(mstID,slvID,wr_req_id);
+      wait(mst0_awvalid && mst0_awready);
+      @(negedge aclk);
+      wr_req_id+=1;
+    end
+
+     aw_req_clr(mstID);
+     
+     repeat(testnum)begin
+      ar_INCR_req_random(mstID,slvID,rd_req_id);
+      wait(mst0_arvalid && mst0_arready);
+      @(negedge aclk);
+      rd_req_id+=1;
+    end
+
+     ar_req_clr(mstID);
+end
+endtask
+
+
+
+task  burst256(input [1:0]mstID, input [1:0]slvID);
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
+
+    
+  aw_req(mstID,slvID,wr_req_id,`INCR,0,255);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+    //  repeat(testnum)begin
+    //   ar_INCR_req_random(mstID,slvID,rd_req_id);
+    //   wait(mst0_arvalid && mst0_arready); 
+    //   @(negedge aclk);
+    //   rd_req_id+=1;
+    // end
+
+    //  ar_req_clr(mstID);
+end
+endtask
+
+task fixed_burst(input [1:0]mstID, input [1:0]slvID);
+begin
+
+  wr_req_id=0;
+  rd_req_id=0;
+
+    
+  aw_req(mstID,slvID,wr_req_id,`FIXED,0,10);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+  ar_req(mstID,slvID,rd_req_id,`FIXED,0,10);
+  @(negedge aclk);
+  wait(mst0_arvalid && mst0_arready);
+  rd_req_id+=1;
+  ar_req_clr(mstID);
+end
+endtask
+
+task wrap_burst(input [1:0]mstID, input [1:0]slvID);
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
+
+    
+  aw_req(mstID,slvID,wr_req_id,`WRAP,4088,12);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+  ar_req(mstID,slvID,rd_req_id,`WRAP,4088,12);
+  @(negedge aclk);
+  wait(mst0_arvalid && mst0_arready);
+  rd_req_id+=1;
+  ar_req_clr(mstID);
+end
+endtask
+
+task Bound_burst(input [1:0]mstID, input [1:0]slvID);
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
+
+    
+  aw_req(mstID,slvID,wr_req_id,`INCR,4090,7);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+  ar_req(mstID,slvID,rd_req_id,`INCR,4090,7);
+  @(negedge aclk);
+  wait(mst0_arvalid && mst0_arready);
+  rd_req_id+=1;
+  ar_req_clr(mstID);
+end
+endtask
+
+task mistroute(input [1:0]mstID, input [1:0]slvID);
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
+
+    
+  aw_req(mstID,2'b11,wr_req_id,`INCR,12287+32,7);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+  ar_req(mstID,2'b11,rd_req_id,`INCR,12287+32,7);
+  @(negedge aclk);
+  wait(mst0_arvalid && mst0_arready);
+  rd_req_id+=1;
+  ar_req_clr(mstID);
+end
+endtask
+//<<<
 //dump、timeout、finish>>>
 //fsdb
 initial

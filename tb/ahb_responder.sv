@@ -258,6 +258,8 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hready
 always_ff @( posedge hclk or negedge hresetn) begin : __hresp
     if(!hresetn)
         hresp<= 'b0;
+    else
+        hresp<= 'b0;
     // else if(always_ready)
     //     hresp <= 1;
     // else 
