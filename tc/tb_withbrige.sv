@@ -1923,26 +1923,27 @@ initial begin
     // $display("\n *******axi2ahb  INCR outstanding test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
-    test_status=9; 
+    // test_status=9; 
      
-    aw_req_clr(`MST0);
-    @(negedge aclk);
-    aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
-    wait(mst0_awvalid && mst0_awready);
-        //wr_req_id+=1;
-    aw_req_clr(`MST0);
+    // aw_req_clr(`MST0);
+    // @(negedge aclk);
+    // aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
+    // @(negedge aclk);
+    // wait(mst0_awvalid && mst0_awready);
+    //     //wr_req_id+=1;
+    // aw_req_clr(`MST0);
 
-    @(negedge aclk);
-    $display("\n *******wait ahb transfer******* \n");
-    // wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
-    // @(negedge aclk);@(negedge aclk);
-    // force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
-    // @(negedge aclk);@(negedge aclk);
-    // release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
+    // @(negedge aclk);
+    // $display("\n *******wait ahb transfer******* \n");
+    // // wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
+    // // @(negedge aclk);@(negedge aclk);
+    // // force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
+    // // @(negedge aclk);@(negedge aclk);
+    // // release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
 
-    repeat(100)
-    @(negedge aclk);
-    $display("\n *******test_status=9 ,axi2ahb  INCR write  error test finish!!!******* \n");  
+    // repeat(100)
+    // @(negedge aclk);
+    // $display("\n *******test_status=9 ,axi2ahb  INCR write  error test finish!!!******* \n");  
     
 //case 0~5 burst read/write brige <<<
     //case 6~7 error detect brige >>>
@@ -1971,6 +1972,7 @@ initial begin
     aw_req_clr(`MST0);
     @(negedge aclk);
     aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
+    @(negedge aclk);
     wait(mst0_awvalid && mst0_awready);
         //wr_req_id+=1;
     aw_req_clr(`MST0);
@@ -1985,10 +1987,10 @@ initial begin
 
     repeat(100)
     @(negedge aclk);
-    $display("\n *******test_status=0 ,axi2ahb  INCR write  error test finish!!!******* \n");  
+    $display("\n *******test_status=9 ,axi2ahb  INCR write  error test finish!!!******* \n");  
     // fixme 用fork join 测试同时读写从机被占用的情况 
     
-    test_status=1;
+    test_status=10;
     ar_req(`MST0,`SLV2,rd_req_id,`INCR,`SLV2_START_ADDR+2,7);
     @(negedge aclk);
     wait(mst0_arvalid && mst0_arready);
@@ -1997,9 +1999,9 @@ initial begin
 
     repeat(100)
     @(negedge aclk);
-    $display("\n *******test_status=1 ,axi2ahb  INCR read test finish!!!******* \n");
+    $display("\n *******test_status=10 ,axi2ahb  INCR read test finish!!!******* \n");
 
-    test_status=2;
+    test_status=11;
     aw_req(`MST0,`SLV2,wr_req_id,`WRAP,`SLV2_END_ADDR-5,7);
     @(negedge aclk);
     wait(mst0_awvalid && mst0_awready);
@@ -2008,9 +2010,9 @@ initial begin
 
     repeat(100)
     @(negedge aclk);
-    $display("\n *******test_status=2 ,axi2ahb  WRAP write  test finish!!!******* \n");
+    $display("\n *******test_status=11 ,axi2ahb  WRAP write  test finish!!!******* \n");
 
-    test_status=3 ;
+    test_status=12 ;
     ar_req(`MST0,`SLV2,rd_req_id,`WRAP,`SLV2_END_ADDR-5,7);
     @(negedge aclk); 
     wait(mst0_arvalid && mst0_arready); 
@@ -2019,9 +2021,9 @@ initial begin
 
     repeat(100)
     @(negedge aclk);
-    $display("\n *******test_status=3 ,axi2ahb  WRAP read test finish!!!******* \n");
+    $display("\n *******test_status=12 ,axi2ahb  WRAP read test finish!!!******* \n");
     
-    test_status=4;
+    test_status=13;
     aw_req(`MST0,`SLV2,wr_req_id,`FIXED,`SLV2_START_ADDR+2,7);
     @(negedge aclk);
     wait(mst0_awvalid && mst0_awready);
@@ -2030,9 +2032,9 @@ initial begin
 
     repeat(100) 
     @(negedge aclk);
-    $display("\n *******test_status=4 ,axi2ahb  FIXED write test finish!!!******* \n");
+    $display("\n *******test_status=13 ,axi2ahb  FIXED write test finish!!!******* \n");
 
-    test_status=5 ;
+    test_status=14 ;
     ar_req(`MST0,`SLV2,rd_req_id,`FIXED,`SLV2_END_ADDR-18,12);
     @(negedge aclk);
     wait(mst0_arvalid && mst0_arready);
@@ -2041,7 +2043,7 @@ initial begin
 
     repeat(100)  
     @(negedge aclk);
-    $display("\n *******test_status=5 ,axi2ahb  FIXED read test finish!!!******* \n");
+    $display("\n *******test_status=14 ,axi2ahb  FIXED read test finish!!!******* \n");
     // mst2_or();
     // $display("\n *******axi2ahb  INCR outstanding test finish!!!******* \n");
     repeat(100) @(negedge aclk);
