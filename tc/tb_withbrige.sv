@@ -1399,6 +1399,7 @@ begin
 
      aw_req_clr(`MST2);
      
+     repeat(200) @(negedge aclk);
      repeat(testnum)begin
       ar_INCR_req_random(`MST2,`SLV2,rd_req_id);
       wait(mst2_arvalid && mst2_arready);
@@ -1751,7 +1752,7 @@ end
 end
 
 initial begin
-    #(1e6*clk_period);
+    #(1e7*clk_period);
     $display ("!!!!!!ERROR Timeout !!!!!!!! at time %t", $time);
     
     $finish;
@@ -1953,11 +1954,12 @@ initial begin
     aw_req_clr(`MST0);
 
     @(negedge aclk);
-    wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridge.ahb_htrans==2)
+    $display("\n *******wait ahb transfer******* \n");
+    wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
     @(negedge aclk);@(negedge aclk);
-    force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridge.ahb_hresp=2'b01;
+    force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
     @(negedge aclk);@(negedge aclk);
-    release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridge.ahb_hresp;
+    release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
 
     repeat(100)
     @(negedge aclk);
