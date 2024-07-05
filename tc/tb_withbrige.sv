@@ -1997,6 +1997,12 @@ initial begin
     //rd_req_id+=1;
     ar_req_clr(`MST0);
 
+    wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
+    @(negedge aclk);@(negedge aclk);
+    force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
+    @(negedge aclk);@(negedge aclk);
+    release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
+
     repeat(100)
     @(negedge aclk);
     $display("\n *******test_status=10 ,axi2ahb  INCR read test finish!!!******* \n");
@@ -2007,6 +2013,12 @@ initial begin
     wait(mst0_awvalid && mst0_awready);
     //rd_req_id+=1;
     aw_req_clr(`MST0);
+
+    wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
+    @(negedge aclk);@(negedge aclk);
+    force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
+    @(negedge aclk);@(negedge aclk);
+    release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
 
     repeat(100)
     @(negedge aclk);
@@ -2019,6 +2031,12 @@ initial begin
     //rd_req_id+=1;
     ar_req_clr(`MST0);
 
+    wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
+    @(negedge aclk);@(negedge aclk);
+    force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
+    @(negedge aclk);@(negedge aclk);
+    release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
+
     repeat(100)
     @(negedge aclk);
     $display("\n *******test_status=12 ,axi2ahb  WRAP read test finish!!!******* \n");
@@ -2029,6 +2047,12 @@ initial begin
     wait(mst0_awvalid && mst0_awready);
     //rd_req_id+=1;
     aw_req_clr(`MST0);
+
+    wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
+    @(negedge aclk);@(negedge aclk);
+    force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
+    @(negedge aclk);@(negedge aclk);
+    release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
 
     repeat(100) 
     @(negedge aclk);
@@ -2041,6 +2065,12 @@ initial begin
     //rd_req_id+=1;
     ar_req_clr(`MST0);
 
+    wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
+    @(negedge aclk);@(negedge aclk);
+    force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
+    @(negedge aclk);@(negedge aclk);
+    release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
+    
     repeat(100)  
     @(negedge aclk);
     $display("\n *******test_status=14 ,axi2ahb  FIXED read test finish!!!******* \n");
