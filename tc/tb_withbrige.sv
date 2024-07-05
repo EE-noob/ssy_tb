@@ -1066,7 +1066,7 @@ case (mst_id)
     2'b01: 
     begin
         mst0_awaddr=awaddr;
-        mst0_awlen_real=$urandom_range(0,MST0_OSTDREQ_SIZE-1);//fix me !!!! 有可能超出边界，范围也有问题
+        mst0_awlen_real=$urandom_range(1,MST0_OSTDREQ_SIZE-1);//fix me !!!! 有可能超出边界，范围也有问题
         mst0_awsize=mst0_narrow ? 0 : 2;
         mst0_awburst=`INCR;
         mst0_awvalid=1'b1;
@@ -1076,7 +1076,7 @@ case (mst_id)
     2'b10:
     begin
         mst1_awaddr=awaddr;
-        mst1_awlen_real=$urandom_range(0,MST1_OSTDREQ_SIZE-1);
+        mst1_awlen_real=$urandom_range(1,MST1_OSTDREQ_SIZE-1);
         mst1_awsize=mst1_narrow ? 0 : 2;
         mst1_awburst=`INCR;
         mst1_awvalid=1'b1;
@@ -1086,7 +1086,7 @@ case (mst_id)
     2'b11:
     begin
         mst2_awaddr=awaddr;
-        mst2_awlen_real=$urandom_range(0,MST2_OSTDREQ_SIZE-1);
+        mst2_awlen_real=$urandom_range(1,MST2_OSTDREQ_SIZE-1);
         mst2_awsize=mst2_narrow ? 0 : 2;
         mst2_awburst=`INCR;
         mst2_awvalid=1'b1;
@@ -1125,7 +1125,7 @@ case (mst_id)
     2'b01: 
     begin
         mst0_araddr=araddr;
-        mst0_arlen_real=$urandom_range(0,SLV0_OSTDREQ_SIZE-1);
+        mst0_arlen_real=$urandom_range(1,SLV0_OSTDREQ_SIZE-1);
         mst0_arsize=5;//!!!!fix me !!!!未考虑窄带传输
         mst0_arburst=`INCR;
         mst0_arvalid=1'b1;
@@ -1135,7 +1135,7 @@ case (mst_id)
     2'b10:
     begin
         mst1_araddr=araddr;
-        mst1_arlen_real=$urandom_range(0,SLV1_OSTDREQ_SIZE-1);
+        mst1_arlen_real=$urandom_range(1,SLV1_OSTDREQ_SIZE-1);
         mst1_arsize=5;//!!!!fix me !!!!未考虑窄带传输
         mst1_arburst=`INCR;
         mst1_arvalid=1'b1;
@@ -1145,7 +1145,7 @@ case (mst_id)
     2'b11:
     begin
         mst2_araddr=araddr;
-        mst2_arlen_real=$urandom_range(0,SLV2_OSTDREQ_SIZE-1);
+        mst2_arlen_real=$urandom_range(1,SLV2_OSTDREQ_SIZE-1);
         mst2_arsize=5;//!!!!fix me !!!!未考虑窄带传输
         mst2_arburst=`INCR;
         mst2_arvalid=1'b1;
@@ -1963,7 +1963,7 @@ initial begin
     
     test_status=8;
     mst2_or();
-    $display("\n *******test_status=8 ,brige outstanding test finish!!!******* \n");
+    $display("\n *******test_status=8 ,mst2 to slv2(brige) outstanding test finish!!!******* \n");
     repeat(200) @(negedge aclk);
 
 //case 9~14  read/write error test >>>

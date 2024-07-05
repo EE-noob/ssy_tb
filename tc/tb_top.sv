@@ -1396,7 +1396,8 @@ begin
 
     repeat(testnum)begin
       aw_INCR_req_random(mstID,slvID,wr_req_id);
-      wait(mst0_awvalid && mst0_awready);
+
+      wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
       @(negedge aclk);
       wr_req_id+=1;
     end
@@ -1405,7 +1406,8 @@ begin
      
      repeat(testnum)begin
       ar_INCR_req_random(mstID,slvID,rd_req_id);
-      wait(mst0_arvalid && mst0_arready);
+      wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
+
       @(negedge aclk);
       rd_req_id+=1;
     end
@@ -1425,8 +1427,7 @@ begin
     
   aw_req(mstID,slvID,wr_req_id,`INCR,0,255);
   @(negedge aclk);
-  wait(mst0_awvalid && mst0_awready);
-  
+  wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
   wr_req_id+=1;
   aw_req_clr(mstID);
   
@@ -1450,14 +1451,14 @@ begin
     
   aw_req(mstID,slvID,wr_req_id,`FIXED,0,10);
   @(negedge aclk);
-  wait(mst0_awvalid && mst0_awready);
+  wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
   
   wr_req_id+=1;
   aw_req_clr(mstID);
   
   ar_req(mstID,slvID,rd_req_id,`FIXED,0,10);
   @(negedge aclk);
-  wait(mst0_arvalid && mst0_arready);
+  wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
   rd_req_id+=1;
   ar_req_clr(mstID);
 end
@@ -1472,14 +1473,14 @@ begin
     
   aw_req(mstID,slvID,wr_req_id,`WRAP,4088,12);
   @(negedge aclk);
-  wait(mst0_awvalid && mst0_awready);
+ wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
   
   wr_req_id+=1;
   aw_req_clr(mstID);
   
   ar_req(mstID,slvID,rd_req_id,`WRAP,4088,12);
   @(negedge aclk);
-  wait(mst0_arvalid && mst0_arready);
+  wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
   rd_req_id+=1;
   ar_req_clr(mstID);
 end
@@ -1494,14 +1495,14 @@ begin
     
   aw_req(mstID,slvID,wr_req_id,`INCR,4090,7);
   @(negedge aclk);
-  wait(mst0_awvalid && mst0_awready);
+  wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
   
   wr_req_id+=1;
   aw_req_clr(mstID);
   
   ar_req(mstID,slvID,rd_req_id,`INCR,4090,7);
   @(negedge aclk);
-  wait(mst0_arvalid && mst0_arready);
+  wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
   rd_req_id+=1;
   ar_req_clr(mstID);
 end
@@ -1516,14 +1517,14 @@ begin
     
   aw_req(mstID,2'b11,wr_req_id,`INCR,12287+32,7);
   @(negedge aclk);
-  wait(mst0_awvalid && mst0_awready);
+  wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
   
   wr_req_id+=1;
   aw_req_clr(mstID);
   
   ar_req(mstID,2'b11,rd_req_id,`INCR,12287+32,7);
   @(negedge aclk);
-  wait(mst0_arvalid && mst0_arready);
+  wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
   rd_req_id+=1;
   ar_req_clr(mstID);
 end
@@ -1634,7 +1635,288 @@ initial begin
     mst0_mistroute();
     $display("\n *******mistroute test finish!!!******* \n");
     repeat(100) @(negedge aclk);
+//for cov >>>
+//0>>>
+    test_status=1;
+outstanding(`MST0,`SLV0);
+$display("\n *******outstanding test finish!!!******* \n");
+repeat(100) @(negedge aclk);
 
+test_status=3; 
+burst256(`MST0,`SLV0);
+$display("\n *******256 length burst test finish!!!******* \n");
+repeat(500) @(negedge aclk);
+
+test_status=4;
+fixed_burst(`MST0,`SLV0);
+$display("\n *******fixed burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=5;
+wrap_burst(`MST0,`SLV0);
+$display("\n ******* wrap burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=7;
+Bound_burst(`MST0,`SLV0);
+$display("\n *******4kBound_burst burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=8;
+mistroute(`MST0,`SLV0);
+$display("\n *******mistroute test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+$display("\n *****************************************************************11111111 \n");
+    test_status=1;
+    outstanding(`MST0,`SLV1);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=3; 
+    burst256(`MST0,`SLV1);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+
+    test_status=4;
+    fixed_burst(`MST0,`SLV1);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=5;
+    wrap_burst(`MST0,`SLV1);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST0,`SLV1);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=8;
+    mistroute(`MST0,`SLV1);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************2222222 \n");
+    test_status=1;
+    outstanding(`MST0,`SLV2);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=3; 
+    burst256(`MST0,`SLV2);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+    
+    test_status=4;
+    fixed_burst(`MST0,`SLV2);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=5;
+    wrap_burst(`MST0,`SLV2);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST0,`SLV2);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=8;
+    mistroute(`MST0,`SLV2);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************33333333333 \n");
+//0<<<
+
+//1>>>
+    test_status=1;
+outstanding(`MST1,`SLV0);
+$display("\n *******outstanding test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=3; 
+burst256(`MST1,`SLV0);
+$display("\n *******256 length burst test finish!!!******* \n");
+repeat(500) @(negedge aclk);
+
+test_status=4;
+fixed_burst(`MST1,`SLV0);
+$display("\n *******fixed burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=5;
+wrap_burst(`MST1,`SLV0);
+$display("\n ******* wrap burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=7;
+Bound_burst(`MST1,`SLV0);
+$display("\n *******4kBound_burst burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=8;
+mistroute(`MST1,`SLV0);
+$display("\n *******mistroute test finish!!!******* \n");
+
+$display("\n *****************************************************************4444444444444 \n");
+repeat(100) @(negedge aclk);
+
+    test_status=1;
+    outstanding(`MST1,`SLV1);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=3; 
+    burst256(`MST1,`SLV1);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+
+    test_status=4;
+    fixed_burst(`MST1,`SLV1);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=5;
+    wrap_burst(`MST1,`SLV1);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST1,`SLV1);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=8;
+    mistroute(`MST1,`SLV1);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************5555555555555 \n");
+    test_status=1;
+    outstanding(`MST1,`SLV2);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=3; 
+    burst256(`MST1,`SLV2);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+    
+    test_status=4;
+    fixed_burst(`MST1,`SLV2);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=5;
+    wrap_burst(`MST1,`SLV2);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST1,`SLV2);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=8;
+    mistroute(`MST1,`SLV2);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************66666666666 \n");
+//1<<<
+
+    //2>>>
+    test_status=1;
+outstanding(`MST2,`SLV0);
+$display("\n *******outstanding test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=3; 
+burst256(`MST2,`SLV0);
+$display("\n *******256 length burst test finish!!!******* \n");
+repeat(500) @(negedge aclk);
+
+test_status=4;
+fixed_burst(`MST2,`SLV0);
+$display("\n *******fixed burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=5;
+wrap_burst(`MST2,`SLV0);
+$display("\n ******* wrap burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=7;
+Bound_burst(`MST2,`SLV0);
+$display("\n *******4kBound_burst burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=8;
+mistroute(`MST2,`SLV0);
+$display("\n *******mistroute test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+$display("\n *****************************************************************7777777777 \n");
+    test_status=1;
+    outstanding(`MST2,`SLV1);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=3; 
+    burst256(`MST2,`SLV1);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+
+    test_status=4;
+    fixed_burst(`MST2,`SLV1);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=5;
+    wrap_burst(`MST2,`SLV1);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST2,`SLV1);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=8;
+    mistroute(`MST2,`SLV1);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************888888888\n");
+    test_status=1;
+    outstanding(`MST2,`SLV2);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=3; 
+    burst256(`MST2,`SLV2);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+    
+    test_status=4;
+    fixed_burst(`MST2,`SLV2);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=5;
+    wrap_burst(`MST2,`SLV2);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST2,`SLV2);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=8;
+    mistroute(`MST2,`SLV2);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************999999999\n");
+//2<<<
+    //for cov<<<
     $display("****************************************************************");
     $display ("*******all test case task done!!!!! at time %t*******", $time);
     $display("****************************************************************");
