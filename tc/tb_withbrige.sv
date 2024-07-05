@@ -1961,10 +1961,10 @@ initial begin
     //case 6~7 error detect brige <<<
 
     
-    // test_status=8;
-    // mst2_or();
-    // $display("\n *******test_status=8 ,brige outstanding test finish!!!******* \n");
-    // repeat(200) @(negedge aclk);
+    test_status=8;
+    mst2_or();
+    $display("\n *******test_status=8 ,brige outstanding test finish!!!******* \n");
+    repeat(200) @(negedge aclk);
 
 //case 9~14  read/write error test >>>
     test_status=9; 
@@ -2070,7 +2070,7 @@ initial begin
     force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
     @(negedge aclk);@(negedge aclk);
     release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;
-    
+
     repeat(100)  
     @(negedge aclk);
     $display("\n *******test_status=14 ,axi2ahb  FIXED read test finish!!!******* \n");
