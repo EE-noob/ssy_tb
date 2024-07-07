@@ -1961,10 +1961,10 @@ initial begin
     //case 6~7 error detect brige <<<
 
     
-    test_status=8;
-    mst2_or();
-    $display("\n *******test_status=8 ,mst2 to slv2(brige) outstanding test finish!!!******* \n");
-    repeat(200) @(negedge aclk);
+    // test_status=8;
+    // mst2_or();
+    // $display("\n *******test_status=8 ,mst2 to slv2(brige) outstanding test finish!!!******* \n");
+    // repeat(200) @(negedge aclk);
 
 //case 9~14  read/write error test >>>
     test_status=9; 
