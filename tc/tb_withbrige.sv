@@ -345,7 +345,7 @@ logic                       PSEL;
 logic [APB_ADDR_WIDTH -1:0] PADDR;
 logic                       PENABLE;
 logic                       PWRITE;
-logic [CONFIG_WIDTH   -1:0] PWADTA;
+logic [CONFIG_WIDTH +2*PRIORITY_WIDTH -1:0] PWADTA;
 logic [CONFIG_WIDTH   -1:0] PRADTA;
 logic                       PREADY;
 
@@ -2079,6 +2079,8 @@ initial begin
     repeat(100) @(negedge aclk);
 //case 0~5 burst read/write brige <<<
 
+
+    //case 15   priority test>>>
     $display("****************************************************************");
     $display ("*******all test case task done!!!!! at time %t*******", $time);
     $display("****************************************************************");
