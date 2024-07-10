@@ -2088,11 +2088,29 @@ initial begin
       begin
         aw_req_clr(`MST0);
         @(negedge aclk);
-        aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
+        aw_req(`MST0,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
         @(negedge aclk);
         wait(mst0_awvalid && mst0_awready);
         //wr_req_id+=1;
         aw_req_clr(`MST0);
+      end
+      begin
+        aw_req_clr(`MST1);
+        @(negedge aclk);
+        aw_req(`MST1,`SLV0,wr_req_id,`INCR,`SLV1_START_ADDR+2,7);
+        @(negedge aclk);
+        wait(mst1_awvalid && mst1_awready);
+        //wr_req_id+=1;
+        aw_req_clr(`MST1);
+      end
+      begin
+        aw_req_clr(`MST2);
+        @(negedge aclk);
+        aw_req(`MST2,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
+        @(negedge aclk);
+        wait(mst2_awvalid && mst2_awready);
+        //wr_req_id+=1;
+        aw_req_clr(`MST2);
       end
     join
 
