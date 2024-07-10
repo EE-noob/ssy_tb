@@ -435,6 +435,9 @@ axi_crossbar_top_inst (
   .mst0_rresp(mst0_rresp),
   .mst0_rdata(mst0_rdata),
   .mst0_rlast(mst0_rlast),
+  .slv2_aclk(aclk),
+  .slv2_aresetn(aresetn),
+  .slv2_srst(srst),
   .mst1_aclk(aclk),
   .mst1_aresetn(aresetn),
   .mst1_srst(srst),
@@ -2081,6 +2084,18 @@ initial begin
 
 
     //case 15   priority test>>>
+    fork
+      begin
+        aw_req_clr(`MST0);
+        @(negedge aclk);
+        aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
+        @(negedge aclk);
+        wait(mst0_awvalid && mst0_awready);
+        //wr_req_id+=1;
+        aw_req_clr(`MST0);
+      end
+    join
+
     $display("****************************************************************");
     $display ("*******all test case task done!!!!! at time %t*******", $time);
     $display("****************************************************************");
