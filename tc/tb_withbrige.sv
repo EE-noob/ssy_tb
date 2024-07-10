@@ -1968,7 +1968,7 @@ initial begin
     test_status=8;
     mst2_or();
     $display("\n *******test_status=8 ,mst2 to slv2(brige) outstanding test finish!!!******* \n");
-    repeat(200) @(negedge aclk);
+    repeat(100) @(negedge aclk);
 
 //case 9~14  read/write error test >>>
     test_status=9; 
@@ -2099,7 +2099,7 @@ initial begin
       begin
         aw_req_clr(`MST1);
         @(negedge aclk);
-        aw_req(`MST1,`SLV0,wr_req_id,`INCR,`SLV1_START_ADDR+2,7);
+        aw_req(`MST1,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
         @(negedge aclk);
         wait(mst1_awvalid && mst1_awready);
         //wr_req_id+=1;
@@ -2108,7 +2108,7 @@ initial begin
       begin
         aw_req_clr(`MST2);
         @(negedge aclk);
-        aw_req(`MST2,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
+        aw_req(`MST2,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
         @(negedge aclk);
         wait(mst2_awvalid && mst2_awready);
         //wr_req_id+=1;
@@ -2116,9 +2116,9 @@ initial begin
       end
     join
 
-    repeat(500) @(negedge aclk);
+    repeat(100) @(negedge aclk);
 
-    $display("\n *******test_status=15 ,SLV0 priority test finish!!!******* \n");
+    $display("\n *******test_status=15 ,SLV0 wr priority test finish!!!******* \n");
 
 
 
