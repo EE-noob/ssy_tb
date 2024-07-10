@@ -1170,7 +1170,11 @@ begin
     aresetn =0 ; //复位
     @(negedge aclk);
     aresetn =1 ; //置位
+    //for cov
     @(negedge aclk);
+    srst=1;//复位
+    @(negedge aclk);
+    srst=0;//置位
 
 end
 endtask
@@ -1208,6 +1212,7 @@ begin
 
     repeat(testnum)begin
       aw_INCR_req_random(`MST0,`SLV0,wr_req_id);
+      $display("wr_req_id%d",wr_req_id);
       wait(mst0_awvalid && mst0_awready);
       @(negedge aclk);
       wr_req_id+=1;
@@ -1485,22 +1490,28 @@ begin
   ar_req_clr(mstID);
 end
 endtask
-
+integer endaddr;
 task Bound_burst(input [1:0]mstID, input [1:0]slvID);
 begin
   mst0_narrow=0;
   wr_req_id=0;
   rd_req_id=0;
-
+  
+  case (slvID)
+    0: endaddr=`SLV0_END_ADDR;
+    1: endaddr=`SLV1_END_ADDR;
+    2: endaddr=`SLV2_END_ADDR;
+    default: endaddr=`SLV0_END_ADDR;
+  endcase
     
-  aw_req(mstID,slvID,wr_req_id,`INCR,4090,7);
+  aw_req(mstID,slvID,wr_req_id,`INCR,endaddr-5,7);
   @(negedge aclk);
   wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
   
   wr_req_id+=1;
   aw_req_clr(mstID);
   
-  ar_req(mstID,slvID,rd_req_id,`INCR,4090,7);
+  ar_req(mstID,slvID,rd_req_id,`INCR,endaddr-5,7);
   @(negedge aclk);
   wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
   rd_req_id+=1;
