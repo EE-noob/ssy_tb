@@ -2113,6 +2113,9 @@ initial begin
         aw_req_clr(`MST2);
       end
     join
+
+    repeat(200) @(negedge aclk);
+
     $display("\n *******test_status=15 ,SLV0 priority test finish!!!******* \n");
 
     $display("****************************************************************");
