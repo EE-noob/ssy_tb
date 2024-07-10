@@ -11,7 +11,7 @@ localparam testnum =4 ;
 // Parameters>>>
 parameter APB_ADDR_WIDTH = 32;
 parameter CONFIG_WIDTH   = 8;
-
+parameter PRIORITY_WIDTH = 6;
 parameter AXI_ID_W   = 4;
 parameter AXI_DATA_W = 32;
 parameter AXI_ADDR_W = 32;
@@ -910,7 +910,7 @@ axi_mst_driver # (
 //<<<
 
 //task>>>
-task apb_wr(input [APB_ADDR_WIDTH -1:0] addr,input logic [CONFIG_WIDTH   -1:0] wdata);
+task apb_wr(input [APB_ADDR_WIDTH -1:0] addr,input logic[(CONFIG_WIDTH+2*PRIORITY_WIDTH)   -1:0]  wdata);
 begin
   PADDR=addr;
   PWRITE=1;
@@ -1843,9 +1843,9 @@ initial begin
       apb_init();
     join
 
-    
-    apb_wr(0,{1'b1,{11{1'b0}}});
-    @(negedge aclk);
+    //low power && priority
+    apb_wr(0,{{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},{1'b0},{7{1'b0}}});
+    repeat(20)@(negedge aclk);
     wr_req_id=0;
     rd_req_id=0;
 
