@@ -1836,6 +1836,7 @@ initial begin
 end
 //<<<
 
+integer apbWrNum;
 initial begin
   //init
 
@@ -2084,6 +2085,7 @@ initial begin
 
 
     //case 15   priority test>>>
+    test_status=15;
     fork
       begin
         aw_req_clr(`MST0);
@@ -2114,9 +2116,21 @@ initial begin
       end
     join
 
-    repeat(200) @(negedge aclk);
+    repeat(500) @(negedge aclk);
 
     $display("\n *******test_status=15 ,SLV0 priority test finish!!!******* \n");
+
+
+
+    //for cov>>>
+    test_status=16;
+    repeat(1<<12)begin
+      apb_wr(0,{{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},{1'b0},{7{1'b0}}});
+      repeat(20)@(negedge aclk);
+      apbWrNum+=1;
+    end
+
+    //for cov<<<
 
     $display("****************************************************************");
     $display ("*******all test case task done!!!!! at time %t*******", $time);
