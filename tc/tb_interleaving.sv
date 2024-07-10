@@ -578,7 +578,9 @@ axi_crossbar_top_inst (
   .slv2_rid(slv2_rid),
   .slv2_rresp(slv2_rresp),
   .slv2_rdata(slv2_rdata),
-  .slv2_rlast(slv2_rlast)
+  .slv2_rlast(slv2_rlast),
+  .mst_priority('b0),
+  .slv_priority('b0)
 );
 //<<<
 
@@ -1613,7 +1615,7 @@ initial begin
 
   //always>>>
 always #(clk_period/2)  aclk = ~ aclk ;
-  //comb
+  //comb>>>
 assign mst0_arlen=mst0_arlen_real;
 assign mst1_arlen=mst1_arlen_real;
 assign mst2_arlen=mst2_arlen_real;
@@ -1621,6 +1623,7 @@ assign mst2_arlen=mst2_arlen_real;
 assign mst0_awlen=mst0_awlen_real;
 assign mst1_awlen=mst1_awlen_real;
 assign mst2_awlen=mst2_awlen_real;
+//<<<
 //assign mst0 mst0_awlen_real;
 //main>>>
 

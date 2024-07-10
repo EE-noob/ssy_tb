@@ -1784,21 +1784,21 @@ initial begin
 //<<<
 
 
-  //always>>>
+  //always (clk)>>>
 always #(clk_period/2)  aclk = ~ aclk ;
-
-  //comb
+  //<<<
+  //comb>>>
 assign PCLK=aclk; 
 
 assign mst0_arlen=mst0_arlen_real;
 assign mst1_arlen=mst1_arlen_real;
 assign mst2_arlen=mst2_arlen_real;
-
-
 // assign mst0_awlen=mst0_awlen_real[4-1:0];
 // assign mst1_awlen=mst1_awlen_real[4-1:0];
 // assign mst2_awlen=mst2_awlen_real[4-1:0];
 //assign mst0 mst0_awlen_real;
+ //comb<<<
+
 //main>>>
 
 //apb error detect>>>

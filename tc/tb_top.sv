@@ -577,7 +577,9 @@ axi_crossbar_top_inst (
   .slv2_rid(slv2_rid),
   .slv2_rresp(slv2_rresp),
   .slv2_rdata(slv2_rdata),
-  .slv2_rlast(slv2_rlast)
+  .slv2_rlast(slv2_rlast),
+  .mst_priority('b0),
+  .slv_priority('b0)
 );
 //<<<
 
