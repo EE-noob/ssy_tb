@@ -10,10 +10,10 @@ module axi_slv_responder #(
     //The data size of each OSTD REG
     parameter SLV_OSTDREQ_SIZE = 8,
 
-    parameter AWCH_W = 53,
+    parameter AWCH_W = 51,
     parameter WCH_W  = 47,
     parameter BCH_W  = 12,
-    parameter ARCH_W = 53,
+    parameter ARCH_W = 51,
     parameter RCH_W  = 45)(
     //interface 
     input  logic  aclk,
