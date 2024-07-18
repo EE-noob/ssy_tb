@@ -19,3 +19,8 @@ little endian{ID(4bits)， Error(2bits),  valid(1bits)，Low_power(1bits)}big en
 Error:   4K bondary 01;
             misroute      10;
             AHB error    11.
+
+             saif
+
+             !!!!
+（switching  activity  interchange  format）

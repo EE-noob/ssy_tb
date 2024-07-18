@@ -1305,6 +1305,37 @@ endtask
 
 
 //test case>>>k0  -   
+task apb_priorty();
+fork
+  begin
+    aw_req_clr(`MST0);
+    @(negedge aclk);
+    aw_req(`MST0,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
+    @(negedge aclk);
+    wait(mst0_awvalid && mst0_awready);
+    //wr_req_id+=1;
+    aw_req_clr(`MST0);
+  end
+  begin
+    aw_req_clr(`MST1);
+    @(negedge aclk);
+    aw_req(`MST1,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
+    @(negedge aclk);
+    wait(mst1_awvalid && mst1_awready);
+    //wr_req_id+=1;
+    aw_req_clr(`MST1);
+  end
+  begin
+    aw_req_clr(`MST2);
+    @(negedge aclk);
+    aw_req(`MST2,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
+    @(negedge aclk);
+    wait(mst2_awvalid && mst2_awready);
+    //wr_req_id+=1;
+    aw_req_clr(`MST2);
+  end
+join
+endtask //automatic
 task apb_init();
 PRESETn=1;
 @(negedge aclk);
@@ -2085,40 +2116,49 @@ initial begin
 
 
     //case 15   priority test>>>
+
+    
     test_status=15;
+    apb_priorty();
+
+    repeat(100) @(negedge aclk);
+
+    $display("\n *******test_status=15 ,SLV0 wr priority test finish!!!******* \n");
+
+    test_status=16;
     fork
       begin
-        aw_req_clr(`MST0);
+        ar_req_clr(`MST0);
         @(negedge aclk);
-        aw_req(`MST0,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
+        ar_req(`MST0,`SLV0,rd_req_id,`INCR,`SLV0_START_ADDR+2,7);
         @(negedge aclk);
-        wait(mst0_awvalid && mst0_awready);
+        wait(mst0_arvalid && mst0_arready);
         //wr_req_id+=1;
-        aw_req_clr(`MST0);
+        ar_req_clr(`MST0);
       end
       begin
-        aw_req_clr(`MST1);
+        ar_req_clr(`MST1);
         @(negedge aclk);
-        aw_req(`MST1,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
+        ar_req(`MST1,`SLV0,rd_req_id,`INCR,`SLV0_START_ADDR+2,7);
         @(negedge aclk);
-        wait(mst1_awvalid && mst1_awready);
-        //wr_req_id+=1;
-        aw_req_clr(`MST1);
+        wait(mst1_arvalid && mst1_arready);
+        //rd_req_id+=1;
+        ar_req_clr(`MST1);
       end
       begin
-        aw_req_clr(`MST2);
+        ar_req_clr(`MST2);
         @(negedge aclk);
-        aw_req(`MST2,`SLV0,wr_req_id,`INCR,`SLV0_START_ADDR+2,7);
+        ar_req(`MST2,`SLV0,rd_req_id,`INCR,`SLV0_START_ADDR+2,7);
         @(negedge aclk);
-        wait(mst2_awvalid && mst2_awready);
-        //wr_req_id+=1;
-        aw_req_clr(`MST2);
+        wait(mst2_arvalid && mst2_arready);
+        //rd_req_id+=1;
+        ar_req_clr(`MST2);
       end
     join
 
     repeat(100) @(negedge aclk);
 
-    $display("\n *******test_status=15 ,SLV0 wr priority test finish!!!******* \n");
+    $display("\n *******test_status=16 ,SLV0 rd priority test finish!!!******* \n");
 
 
 
@@ -2129,7 +2169,16 @@ initial begin
       repeat(20)@(negedge aclk);
       apbWrNum+=1;
     end
-
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[0].slv_switch.arch_round_arbiter.MST_PRI=0;
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[0].slv_switch.wch_round_arbiter.MST_PRI=0;
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[0].slv_switch.awch_round_arbiter.MST_PRI=0;
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[1].slv_switch.arch_round_arbiter.MST_PRI=0;
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[1].slv_switch.wch_round_arbiter.MST_PRI=0;
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[1].slv_switch.awch_round_arbiter.MST_PRI=0;
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[2].slv_switch.arch_round_arbiter.MST_PRI=0;
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[2].slv_switch.wch_round_arbiter.MST_PRI=0;
+    // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[2].slv_switch.awch_round_arbiter.MST_PRI=0;
+    repeat(20)@(negedge aclk);
     //for cov<<<
 
     $display("****************************************************************");
