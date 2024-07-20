@@ -399,7 +399,7 @@ axi_crossbar_top_inst (
   .interrupt_valid(interrupt_valid),
   .aclk(aclk),
   .aresetn(aresetn),
-  .srst(srst),
+
   .mst0_aclk(aclk),
   .mst0_aresetn(aresetn),
   .mst0_srst(srst),
@@ -437,10 +437,10 @@ axi_crossbar_top_inst (
   .mst0_rlast(mst0_rlast),
   .slv2_aclk(aclk),
   .slv2_aresetn(aresetn),
-  .slv2_srst(srst),
+
   .mst1_aclk(aclk),
   .mst1_aresetn(aresetn),
-  .mst1_srst(srst),
+
   .mst1_awvalid(mst1_awvalid),
   .mst1_awready(mst1_awready),
   .mst1_awaddr(mst1_awaddr),
@@ -475,7 +475,7 @@ axi_crossbar_top_inst (
   .mst1_rlast(mst1_rlast),
   .mst2_aclk(aclk),
   .mst2_aresetn(aresetn),
-  .mst2_srst(srst),
+
   .mst2_awvalid(mst2_awvalid),
   .mst2_awready(mst2_awready),
   .mst2_awaddr(mst2_awaddr),
@@ -510,7 +510,7 @@ axi_crossbar_top_inst (
   .mst2_rlast(mst2_rlast),
   .slv0_aclk(aclk),
   .slv0_aresetn(aresetn),
-  .slv0_srst(srst),
+
   .slv0_awvalid(slv0_awvalid),
   .slv0_awready(slv0_awready),
   .slv0_awaddr(slv0_awaddr),
@@ -545,7 +545,7 @@ axi_crossbar_top_inst (
   .slv0_rlast(slv0_rlast),
   .slv1_aclk(aclk),
   .slv1_aresetn(aresetn),
-  .slv1_srst(srst),
+
   .slv1_awvalid(slv1_awvalid),
   .slv1_awready(slv1_awready),
   .slv1_awaddr(slv1_awaddr),
@@ -1774,7 +1774,7 @@ endtask //interleaving();
 //fsdb
 initial
 begin
-//if($test$plusargs("DUMP_FSDB"))
+if($test$plusargs("dump_fsdb"))
 begin
 $fsdbDumpfile("testname.fsdb");  //记录波形，波形名字testname.fsdb
 $fsdbDumpvars("+all");  //+all参数，dump SV中的struct结构体
@@ -1784,6 +1784,22 @@ $fsdbDumpMDA();  //dump memory arrays
 //1: 仅仅dump当前组，也就是说，只dump top这一层的多维数组。
 end
 end
+
+//vcd
+initial
+begin
+if($test$plusargs("dump_vcd"))
+begin
+  $dumpfile("bridge.dump");
+  $dumpvars;
+end
+end
+initial
+if($test$plusargs("sdf"))
+begin
+  $sdf_annotate("../rtl/top_with_bridge.sdf",top_with_bridge,,"sdf.log");
+end
+
 
 initial begin
     #(1e7*clk_period);
@@ -2008,6 +2024,7 @@ initial begin
     @(negedge aclk);
     aw_req(`MST0,`SLV2,wr_req_id,`INCR,`SLV2_START_ADDR+2,7);
     @(negedge aclk);
+
     wait(mst0_awvalid && mst0_awready);
         //wr_req_id+=1;
     aw_req_clr(`MST0);
@@ -2031,9 +2048,13 @@ initial begin
     wait(mst0_arvalid && mst0_arready);
     //rd_req_id+=1;
     ar_req_clr(`MST0);
+   $display(" wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2) bg");
 
+   repeat(1000)@(negedge aclk);
+   $finish;
     wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
     @(negedge aclk);@(negedge aclk);
+    $display(" wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2) ed");
     force tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp=2'b01;
     @(negedge aclk);@(negedge aclk);
     release tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_hresp;

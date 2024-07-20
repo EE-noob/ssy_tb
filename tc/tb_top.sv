@@ -367,10 +367,10 @@ axi_crossbar_top # (
 axi_crossbar_top_inst (
   .aclk(aclk),
   .aresetn(aresetn),
-  .srst(srst),
+
   .mst0_aclk(aclk),
   .mst0_aresetn(aresetn),
-  .mst0_srst(srst),
+
   .mst0_awvalid(mst0_awvalid),
   .mst0_awready(mst0_awready),
   .mst0_awaddr(mst0_awaddr),
@@ -405,7 +405,7 @@ axi_crossbar_top_inst (
   .mst0_rlast(mst0_rlast),
   .mst1_aclk(aclk),
   .mst1_aresetn(aresetn),
-  .mst1_srst(srst),
+
   .mst1_awvalid(mst1_awvalid),
   .mst1_awready(mst1_awready),
   .mst1_awaddr(mst1_awaddr),
@@ -440,7 +440,7 @@ axi_crossbar_top_inst (
   .mst1_rlast(mst1_rlast),
   .mst2_aclk(aclk),
   .mst2_aresetn(aresetn),
-  .mst2_srst(srst),
+
   .mst2_awvalid(mst2_awvalid),
   .mst2_awready(mst2_awready),
   .mst2_awaddr(mst2_awaddr),
@@ -475,7 +475,7 @@ axi_crossbar_top_inst (
   .mst2_rlast(mst2_rlast),
   .slv0_aclk(aclk),
   .slv0_aresetn(aresetn),
-  .slv0_srst(srst),
+
   .slv0_awvalid(slv0_awvalid),
   .slv0_awready(slv0_awready),
   .slv0_awaddr(slv0_awaddr),
@@ -510,7 +510,7 @@ axi_crossbar_top_inst (
   .slv0_rlast(slv0_rlast),
   .slv1_aclk(aclk),
   .slv1_aresetn(aresetn),
-  .slv1_srst(srst),
+
   .slv1_awvalid(slv1_awvalid),
   .slv1_awready(slv1_awready),
   .slv1_awaddr(slv1_awaddr),
@@ -545,7 +545,7 @@ axi_crossbar_top_inst (
   .slv1_rlast(slv1_rlast),
   .slv2_aclk(aclk),
   .slv2_aresetn(aresetn),
-  .slv2_srst(srst),
+
   .slv2_awvalid(slv2_awvalid),
   .slv2_awready(slv2_awready),
   .slv2_awaddr(slv2_awaddr),
@@ -1547,7 +1547,7 @@ endtask
 //fsdb
 initial
 begin
-//if($test$plusargs("DUMP_FSDB"))
+if($test$plusargs("dump_fsdb"))
 begin
 $fsdbDumpfile("testname.fsdb");  //记录波形，波形名字testname.fsdb
 $fsdbDumpvars("+all");  //+all参数，dump SV中的struct结构体
@@ -1558,6 +1558,18 @@ $fsdbDumpMDA();  //dump memory arrays
 end
 end
 
+//vcd
+initial
+begin
+if($test$plusargs("dump_vcd"))
+begin
+  $dumpfile("xbar.dump");
+  $dumpvars;
+end
+end
+// initial
+
+//   $sdf_annotate("my.sdf",dut)
 initial begin
     #(1e6*clk_period);
     $display ("!!!!!!ERROR Timeout !!!!!!!! at time %t", $time);

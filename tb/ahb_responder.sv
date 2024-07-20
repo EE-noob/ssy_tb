@@ -75,7 +75,7 @@ module ahb_slv_responder #(
     //<<<
 
 //arbiter>>>
-always_ff @( posedge hclk or negedge hresetn) begin : __hgrant
+always_ff @( negedge  hclk or negedge hresetn) begin : __hgrant
         if(!hresetn)
             hgrant<=0;
         else if( hbusreq) //fixme 只适用总线上只有一对主从机的情况
@@ -84,7 +84,7 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hgrant
         //fixme hgrant 又拉低的情况
     end
 
-always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
+always_ff @( negedge  hclk or negedge hresetn) begin : __hmaster
         if(!hresetn)
             hmaster<=0;
         else if( hgrant && hready)
@@ -104,7 +104,7 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
 //sequential>>>
 
 //counter>>>
-//     always_ff @( posedge aclk or negedge aresetn) begin : __rsp_remain_cnt
+//     always_ff @( negedge  aclk or negedge aresetn) begin : __rsp_remain_cnt
 //         if(!aresetn)
 //             rsp_remain_cnt<=0;
 //         else if( (in_wlast && in_wvalid && out_wready) && (out_bvalid && in_bready))
@@ -116,7 +116,7 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
         
 //     end
 
-// always_ff @( posedge aclk or negedge aresetn) begin : __req_remain_cnt
+// always_ff @( negedge  aclk or negedge aresetn) begin : __req_remain_cnt
 //     if(!aresetn)
 //         req_remain_cnt<=0;
 //     else if(in_arvalid && out_arready && out_rlast)
@@ -127,7 +127,7 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
 //         req_remain_cnt<=req_remain_cnt-1; 
 // end
 
-// always_ff @( posedge aclk or negedge aresetn) begin : __rdata_cnt
+// always_ff @( negedge  aclk or negedge aresetn) begin : __rdata_cnt
 //     if(!aresetn)
 //         rdata_cnt<=0;
 //     else if(out_rlast && out_rvalid && in_rready)
@@ -142,19 +142,19 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
 //ram
 
 //rsp>>>
-// always_ff @( posedge aclk or negedge aresetn) begin : __bresp_rd_ptr
+// always_ff @( negedge  aclk or negedge aresetn) begin : __bresp_rd_ptr
 //     if(!aresetn)
 //         bresp_rd_ptr <= 'b0; 
 //     else if(out_bvalid&&in_bready)
 //         bresp_rd_ptr <= bresp_rd_ptr+1;
 //     end
-// always_ff @( posedge aclk or negedge aresetn) begin : __bresp_wr_ptr
+// always_ff @( negedge  aclk or negedge aresetn) begin : __bresp_wr_ptr
 //     if(!aresetn)
 //         bresp_wr_ptr <= 'b0;
 //     else if(in_wlast && out_rvalid && in_rready)
 //         bresp_wr_ptr <= bresp_wr_ptr+1;
 //     end
-// always_ff @( posedge aclk or negedge aresetn) begin : __bresp_ram
+// always_ff @( negedge  aclk or negedge aresetn) begin : __bresp_ram
 //     if(!aresetn)
 //     for (integer i = 0; i < 2**AXI_ID_W; i = i + 1) begin
 //         bresp_ram[i] <= 'b0;
@@ -163,19 +163,19 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
 //         bresp_ram[bresp_wr_ptr]<= 2'b00;//均默认接收正常
 //     end
     
-//     always_ff @( posedge aclk or negedge aresetn) begin : __bid_rd_ptr
+//     always_ff @( negedge  aclk or negedge aresetn) begin : __bid_rd_ptr
 //         if(!aresetn)
 //             bid_rd_ptr <= 'b0;
 //         else if(out_bvalid&&in_bready)
 //             bid_rd_ptr <= bid_rd_ptr+1;
 //         end
-//     always_ff @( posedge aclk or negedge aresetn) begin : __bid_wr_ptr
+//     always_ff @( negedge  aclk or negedge aresetn) begin : __bid_wr_ptr
 //         if(!aresetn)
 //             bid_wr_ptr <= 'b0;
 //         else if(in_wlast && in_wvalid && out_wready)
 //             bid_wr_ptr <= bid_wr_ptr+1;
 //         end
-//     always_ff @( posedge aclk or negedge aresetn) begin : __bid_ram
+//     always_ff @( negedge  aclk or negedge aresetn) begin : __bid_ram
 //         if(!aresetn)
 //         for (integer i = 0; i < 2**AXI_ID_W; i = i + 1) begin
 //             bid_ram[i] <= 'b0;
@@ -186,21 +186,21 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
 //rsp<<<
 
 //id 、 len>>>
-        // always_ff @( posedge aclk or negedge aresetn) begin : __arlen_rd_ptr
+        // always_ff @( negedge  aclk or negedge aresetn) begin : __arlen_rd_ptr
         //     if(!aresetn)
         //         arlen_rd_ptr <= 'b0;
         //     else if(out_rlast)
         //         arlen_rd_ptr <= arlen_rd_ptr+1;
         //     end
         
-        // always_ff @( posedge aclk or negedge aresetn) begin : __arlen_wr_ptr
+        // always_ff @( negedge  aclk or negedge aresetn) begin : __arlen_wr_ptr
         //     if(!aresetn)
         //         arlen_wr_ptr <= 'b0;
         //     else if(in_arvalid && out_arready)
         //         arlen_wr_ptr <= arlen_wr_ptr+1;
         //     end
         
-        // always_ff @( posedge aclk or negedge aresetn) begin : __arlen_ram
+        // always_ff @( negedge  aclk or negedge aresetn) begin : __arlen_ram
         //     if(!aresetn)
         //     for (integer i = 0; i < SLV_OSTDREQ_NUM; i = i + 1) begin
         //         arlen_ram[i] <= 'b0;
@@ -209,21 +209,21 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
         //         arlen_ram[arlen_wr_ptr]<= in_arlen;
         //     end
             
-        // always_ff @( posedge aclk or negedge aresetn) begin : __arid_rd_ptr
+        // always_ff @( negedge  aclk or negedge aresetn) begin : __arid_rd_ptr
         //     if(!aresetn)
         //         arid_rd_ptr <= 'b0;
         //     else if(out_rlast)
         //         arid_rd_ptr <= arlen_rd_ptr+1;
         //     end
         
-        // always_ff @( posedge aclk or negedge aresetn) begin : __arid_wr_ptr
+        // always_ff @( negedge  aclk or negedge aresetn) begin : __arid_wr_ptr
         //     if(!aresetn)
         //         arid_wr_ptr <= 'b0;
         //     else if(in_arvalid && out_arready)
         //         arid_wr_ptr <= arlen_wr_ptr+1;
         //     end
         
-        // always_ff @( posedge aclk or negedge aresetn) begin : __arid_ram
+        // always_ff @( negedge  aclk or negedge aresetn) begin : __arid_ram
         //     if(!aresetn)
         //     for (integer i = 0; i < SLV_OSTDREQ_NUM; i = i + 1) begin
         //         arid_ram[i] <= 'b0;
@@ -239,14 +239,14 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hmaster
 // assign out_bvalid= (rsp_remain_cnt!=0);
 // assign out_bid=bid_now;//!!!!fixme !!!!未考虑交织！！！！
 // assign out_bresp=bresp_now;
-always @( posedge hclk or negedge hresetn) begin : __rdata//!!!fixme!!!can't syn 考虑prbs
+always @( negedge  hclk or negedge hresetn) begin : __rdata//!!!fixme!!!can't syn 考虑prbs
     if(!hresetn )
         hrdata<= 'b0;
     else if(!hwrite &&( (htrans==`NONSEQ) || (htrans==`SEQ)) && hready)
         hrdata<= hrdata+1;
 end
 
-always_ff @( posedge hclk or negedge hresetn) begin : __hready
+always_ff @( negedge  hclk or negedge hresetn) begin : __hready
     if(!hresetn)
         hready <= 'b0;
     else if(always_ready)
@@ -255,7 +255,7 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hready
         hready<= 1;//!!!!fixme !!!!不考虑没有ready的情况！！！！
     end
 
-always_ff @( posedge hclk or negedge hresetn) begin : __hresp
+always_ff @( negedge  hclk or negedge hresetn) begin : __hresp
     if(!hresetn)
         hresp<= 'b0;
     else
@@ -268,7 +268,7 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hresp
 
 
 
-// always_ff @( posedge aclk or negedge aresetn) begin : __out_wready
+// always_ff @( negedge  aclk or negedge aresetn) begin : __out_wready
 //     if(!aresetn)
 //         out_wready <= 'b0;
 //     else if(always_ready)
@@ -277,7 +277,7 @@ always_ff @( posedge hclk or negedge hresetn) begin : __hresp
 //         out_wready<= $random;//!!!!fixme !!!!完全随机！！！！
 //     end
 
-// always_ff @( posedge aclk or negedge aresetn) begin : __out_arready
+// always_ff @( negedge  aclk or negedge aresetn) begin : __out_arready
 //     if(!aresetn)
 //         out_arready <= 'b0;
 //     else 

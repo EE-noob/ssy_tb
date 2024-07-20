@@ -368,7 +368,7 @@ axi_crossbar_top # (
 axi_crossbar_top_inst (
   .aclk(aclk),
   .aresetn(aresetn),
-  .srst(srst),
+  
   .mst0_aclk(aclk),
   .mst0_aresetn(aresetn),
   .mst0_srst(srst),
@@ -1569,7 +1569,7 @@ endtask //interleaving();
 //fsdb
 initial
 begin
-//if($test$plusargs("DUMP_FSDB"))
+if($test$plusargs("dump_fsdb"))
 begin
 $fsdbDumpfile("testname.fsdb");  //记录波形，波形名字testname.fsdb
 $fsdbDumpvars("+all");  //+all参数，dump SV中的struct结构体
@@ -1579,6 +1579,19 @@ $fsdbDumpMDA();  //dump memory arrays
 //1: 仅仅dump当前组，也就是说，只dump top这一层的多维数组。
 end
 end
+
+//vcd
+initial
+begin
+if($test$plusargs("dump_vcd"))
+begin
+  $dumpfile("intl.dump");
+  $dumpvars;
+end
+end
+// initial
+
+//   $sdf_annotate("my.sdf",dut)
 
 initial begin
     #(1e6*clk_period);
