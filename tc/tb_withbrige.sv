@@ -402,7 +402,7 @@ axi_crossbar_top_inst (
 
   .mst0_aclk(aclk),
   .mst0_aresetn(aresetn),
-  .mst0_srst(srst),
+
   .mst0_awvalid(mst0_awvalid),
   .mst0_awready(mst0_awready),
   .mst0_awaddr(mst0_awaddr),
@@ -776,7 +776,7 @@ axi_mst_driver # (
   axi_slv0_responder_inst (
     .aclk(aclk),
     .aresetn(aresetn),
-    .srst(srst),
+
     .out_awready(slv0_awready),
     .out_wready(slv0_wready),
     .in_wvalid(slv0_wvalid),
@@ -816,7 +816,7 @@ axi_mst_driver # (
   axi_slv1_responder_inst (
     .aclk(aclk),
     .aresetn(aresetn),
-    .srst(srst),
+
     .out_awready(slv1_awready),
     .in_wvalid(slv1_wvalid),
     .out_wready(slv1_wready),
