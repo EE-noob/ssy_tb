@@ -14,8 +14,8 @@ module axi_mst_driver #(
     parameter WCH_W  = 47, 
     parameter BCH_W  = 12,
     parameter ARCH_W = 53,
-    parameter RCH_W  = 45
-    
+    parameter RCH_W  = 45,
+    parameter clk_period = 5
     // ,
     
     // parameter [AXI_ID_W - 1 : 0] MST_ID_MASK = 'b0100
@@ -102,7 +102,7 @@ module axi_mst_driver #(
 //counter>>>
 
 
-always_ff @( negedge aclk or negedge aresetn) begin : __req_remain_cnt
+always_ff @( posedge aclk or negedge aresetn) begin : __req_remain_cnt
     if(!aresetn)
         req_remain_cnt<=0;
     else if(in_awvalid && in_awready && out_wlast)
@@ -114,7 +114,7 @@ always_ff @( negedge aclk or negedge aresetn) begin : __req_remain_cnt
     
 end
 
-always_ff @( negedge aclk or negedge aresetn) begin : __wdata_cnt
+always_ff @( posedge aclk or negedge aresetn) begin : __wdata_cnt
     if(!aresetn)
         wdata_cnt<=0;
     else if(out_wlast && out_wvalid && in_wready)
@@ -125,14 +125,14 @@ always_ff @( negedge aclk or negedge aresetn) begin : __wdata_cnt
 end
 //<<<
 //reg
-always_ff @( negedge aclk or negedge aresetn) begin : __wvalid_prev
+always_ff @( posedge aclk or negedge aresetn) begin : __wvalid_prev
     if(!aresetn)
         out_wvalid_prev<=0;
     else 
         out_wvalid_prev<=out_wvalid;
     end
 
-always_ff @( negedge aclk or negedge aresetn) begin : __wlast_prev
+always_ff @( posedge aclk or negedge aresetn) begin : __wlast_prev
     if(!aresetn)
         out_wlast_prev<=0;
     else 
@@ -143,21 +143,21 @@ always_ff @( negedge aclk or negedge aresetn) begin : __wlast_prev
 //ram
 
     //len id    
-always_ff @( negedge aclk or negedge aresetn) begin : __awlen_rd_ptr
+always_ff @( posedge aclk or negedge aresetn) begin : __awlen_rd_ptr
     if(!aresetn)
         awlen_rd_ptr <= 'b0;
     else if(out_wlast && out_wvalid && in_wready)
         awlen_rd_ptr <= awlen_rd_ptr+1;
     end
 
-always_ff @( negedge aclk or negedge aresetn) begin : __awlen_wr_ptr
+always_ff @( posedge aclk or negedge aresetn) begin : __awlen_wr_ptr
     if(!aresetn)
         awlen_wr_ptr <= 'b0;
     else if(in_awvalid && in_awready)
         awlen_wr_ptr <= awlen_wr_ptr+1;
     end
 
-always_ff @( negedge aclk or negedge aresetn) begin : __awlen_ram
+always_ff @( posedge aclk or negedge aresetn) begin : __awlen_ram
     if(!aresetn)
     for (integer i = 0; i < MST_OSTDREQ_NUM; i = i + 1) begin
         awlen_ram[i] <= 'b0;
@@ -166,21 +166,21 @@ always_ff @( negedge aclk or negedge aresetn) begin : __awlen_ram
         awlen_ram[awlen_wr_ptr]<= in_awlen_real;
     end
     
-always_ff @( negedge aclk or negedge aresetn) begin : __awid_rd_ptr
+always_ff @( posedge aclk or negedge aresetn) begin : __awid_rd_ptr
     if(!aresetn)
         awid_rd_ptr <= 'b0;
     else if(out_wlast && out_wvalid && in_wready)
         awid_rd_ptr <= awlen_rd_ptr+1;
     end
 
-always_ff @( negedge aclk or negedge aresetn) begin : __awid_wr_ptr
+always_ff @( posedge aclk or negedge aresetn) begin : __awid_wr_ptr
     if(!aresetn)
         awid_wr_ptr <= 'b0;
     else if(in_awvalid && in_awready)
         awid_wr_ptr <= awlen_wr_ptr+1;
     end
 
-always_ff @( negedge aclk or negedge aresetn) begin : __awid_ram
+always_ff @( posedge aclk or negedge aresetn) begin : __awid_ram
     if(!aresetn)
     for (integer i = 0; i < MST_OSTDREQ_NUM; i = i + 1) begin
         awid_ram[i] <= 'b0;
@@ -191,27 +191,27 @@ always_ff @( negedge aclk or negedge aresetn) begin : __awid_ram
  
 
 //output:>>>
-assign out_wvalid= (req_remain_cnt!=0);
-assign out_wlast= (wdata_cnt==awlen_now) && out_wvalid;
-assign out_wid=awid_now;//!!!!fixme !!!!未考虑交织！！！！
+assign #(clk_period/5) out_wvalid= (req_remain_cnt!=0);
+assign #(clk_period/5) out_wlast= (wdata_cnt==awlen_now) && out_wvalid;
+assign #(clk_period/5) out_wid=awid_now;//!!!!fixme !!!!未考虑交织！！！！
 always @( negedge aclk or negedge aresetn) begin : __wdata//!!!fix me!!!can't syn 考虑prbs
     if(!aresetn)
-        out_wdata=#1 'b0;
+        out_wdata= #(clk_period/5) 'b0;
     else if(out_wvalid && in_wready)
-        out_wdata=#1 narrow? (out_wdata +1) & wstrb32 :(out_wdata +1);    
+        out_wdata= #(clk_period/5) narrow? (out_wdata +1) & wstrb32 :(out_wdata +1);    
 end
 always_ff @( negedge aclk or negedge aresetn) begin : __out_bready
     if(!aresetn)
-        out_bready <= 'b0;
+        out_bready <= #(clk_period/5) 'b0;
     else 
-        out_bready<= $random;//!!!!fixme !!!!完全随机！！！！
+        out_bready<= #(clk_period/5) $random;//!!!!fixme !!!!完全随机！！！！
     end
 
     always_ff @( negedge aclk or negedge aresetn) begin : __out_rready
         if(!aresetn)
-            out_rready <= 'b0;
+            out_rready <= #(clk_period/5) 'b0;
         else 
-            out_rready<= $random;//!!!!fixme !!!!完全随机！！！！
+            out_rready<=#(clk_period/5)  $random;//!!!!fixme !!!!完全随机！！！！
         end
 always_comb begin : __out_wstrb
     if(out_wvalid)
@@ -227,8 +227,48 @@ always_comb begin : __out_wstrb
     else
         out_wstrb='b0;
 end
-assign wstrb32={{8{out_wstrb[3]}},{8{out_wstrb[2]}},{8{out_wstrb[1]}},{8{out_wstrb[0]}}};
+assign #(clk_period/5) wstrb32= {{8{out_wstrb[3]}},{8{out_wstrb[2]}},{8{out_wstrb[1]}},{8{out_wstrb[0]}}};
 //<<<
+
+// //output:>>>
+// assign out_wvalid= (req_remain_cnt!=0);
+// assign out_wlast= (wdata_cnt==awlen_now) && out_wvalid;
+// assign out_wid=awid_now;//!!!!fixme !!!!未考虑交织！！！！
+// always @( negedge aclk or negedge aresetn) begin : __wdata//!!!fix me!!!can't syn 考虑prbs
+//     if(!aresetn)
+//         out_wdata=#1 'b0;
+//     else if(out_wvalid && in_wready)
+//         out_wdata=#1 narrow? (out_wdata +1) & wstrb32 :(out_wdata +1);    
+// end
+// always_ff @( negedge aclk or negedge aresetn) begin : __out_bready
+//     if(!aresetn)
+//         out_bready <= 'b0;
+//     else 
+//         out_bready<= $random;//!!!!fixme !!!!完全随机！！！！
+//     end
+
+//     always_ff @( negedge aclk or negedge aresetn) begin : __out_rready
+//         if(!aresetn)
+//             out_rready <= 'b0;
+//         else 
+//             out_rready<= $random;//!!!!fixme !!!!完全随机！！！！
+//         end
+// always_comb begin : __out_wstrb
+//     if(out_wvalid)
+//     begin
+//         if(narrow)
+//         begin
+//             out_wstrb='b0;
+//             out_wstrb[wdata_cnt%4]=1;
+//         end
+//         else 
+//             out_wstrb={4{1'b1}};
+//     end
+//     else
+//         out_wstrb='b0;
+// end
+// assign wstrb32={{8{out_wstrb[3]}},{8{out_wstrb[2]}},{8{out_wstrb[1]}},{8{out_wstrb[0]}}};
+// //<<<
 
 
 

@@ -1567,9 +1567,9 @@ begin
   $dumpvars;
 end
 end
-// initial
+initial
+  $sdf_annotate("axi_crossbar_top.sdf",dut);
 
-//   $sdf_annotate("my.sdf",dut)
 initial begin
     #(1e6*clk_period);
     $display ("!!!!!!ERROR Timeout !!!!!!!! at time %t", $time);

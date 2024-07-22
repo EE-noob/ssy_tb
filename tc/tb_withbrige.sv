@@ -912,6 +912,7 @@ axi_mst_driver # (
   
 //<<<
 
+
 //task>>>
 task apb_wr(input [APB_ADDR_WIDTH -1:0] addr,input logic[(CONFIG_WIDTH+2*PRIORITY_WIDTH)   -1:0]  wdata);
 begin
@@ -1795,9 +1796,11 @@ begin
 end
 end
 initial
-if($test$plusargs("sdf"))
+// if($test$plusargs("sdf"))
 begin
-  $sdf_annotate("../rtl/top_with_bridge.sdf",top_with_bridge,,"sdf.log");
+  // $sdf_annotate("../rtl/top_with_bridge.sdf",top_with_bridge,,"sdf.log");
+  $sdf_annotate("../../icc/output/top_with_bridge.sdf",top_with_bridge,,"sdf.log");
+  $display("\n!!!!!!sdf annotate!!!!\n");
 end
 
 
@@ -2050,8 +2053,8 @@ initial begin
     ar_req_clr(`MST0);
    $display(" wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2) bg");
 
-   repeat(1000)@(negedge aclk);
-   $finish;
+  //  repeat(1000)@(negedge aclk);
+  //  $finish;
     wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2)
     @(negedge aclk);@(negedge aclk);
     $display(" wait(tb_withbridge.axi_crossbar_top_inst.axi2ahb_bridege.ahb_htrans==2) ed");

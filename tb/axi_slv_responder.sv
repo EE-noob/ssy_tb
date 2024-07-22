@@ -1,4 +1,5 @@
 module axi_slv_responder #(
+    //if>>>
     parameter always_ready=0,
     parameter AXI_ADDR_W = 32,
     //主机输入ID宽度
@@ -14,7 +15,11 @@ module axi_slv_responder #(
     parameter WCH_W  = 47,
     parameter BCH_W  = 12,
     parameter ARCH_W = 51,
-    parameter RCH_W  = 45)(
+    parameter RCH_W  = 45,
+
+
+    parameter clk_period = 5
+    )(
     //interface 
     input  logic  aclk,
     input  logic  aresetn,
@@ -56,6 +61,7 @@ module axi_slv_responder #(
     output  logic  [AXI_DATA_W  - 1 : 0] out_rdata,
     output  logic  out_rlast  
     );
+    //if<<<
 //vari def>>>
 //counter 
     logic [2**4-1:0]                    rdata_cnt;
@@ -102,7 +108,7 @@ module axi_slv_responder #(
 //sequential>>>
 
 //counter>>>
-    always_ff @( posedge aclk or negedge aresetn) begin : __rsp_remain_cnt
+    always_ff @( posedge  aclk or negedge aresetn) begin : __rsp_remain_cnt
         if(!aresetn)
             rsp_remain_cnt<=0;
         else if( (in_wlast && in_wvalid && out_wready) && (out_bvalid && in_bready))
@@ -114,7 +120,7 @@ module axi_slv_responder #(
         
     end
 
-always_ff @( posedge aclk or negedge aresetn) begin : __req_remain_cnt
+always_ff @( posedge  aclk or negedge aresetn) begin : __req_remain_cnt
     if(!aresetn)
         req_remain_cnt<=0;
     else if(in_arvalid && out_arready && out_rlast)
@@ -125,7 +131,7 @@ always_ff @( posedge aclk or negedge aresetn) begin : __req_remain_cnt
         req_remain_cnt<=req_remain_cnt-1; 
 end
 
-always_ff @( posedge aclk or negedge aresetn) begin : __rdata_cnt
+always_ff @( posedge  aclk or negedge aresetn) begin : __rdata_cnt
     if(!aresetn)
         rdata_cnt<=0;
     else if(out_rlast && out_rvalid && in_rready)
@@ -139,20 +145,20 @@ end
   
 //ram
 
-//rsp
-always_ff @( posedge aclk or negedge aresetn) begin : __bresp_rd_ptr
+//rsp>>>
+always_ff @( posedge  aclk or negedge aresetn) begin : __bresp_rd_ptr
     if(!aresetn)
         bresp_rd_ptr <= 'b0; 
     else if(out_bvalid&&in_bready)
         bresp_rd_ptr <= bresp_rd_ptr+1;
     end
-always_ff @( posedge aclk or negedge aresetn) begin : __bresp_wr_ptr
+always_ff @( posedge  aclk or negedge aresetn) begin : __bresp_wr_ptr
     if(!aresetn)
         bresp_wr_ptr <= 'b0;
     else if(in_wlast && out_rvalid && in_rready)
         bresp_wr_ptr <= bresp_wr_ptr+1;
     end
-always_ff @( posedge aclk or negedge aresetn) begin : __bresp_ram
+always_ff @( posedge  aclk or negedge aresetn) begin : __bresp_ram
     if(!aresetn)
     for (integer i = 0; i < 2**AXI_ID_W; i = i + 1) begin
         bresp_ram[i] <= 'b0;
@@ -161,19 +167,19 @@ always_ff @( posedge aclk or negedge aresetn) begin : __bresp_ram
         bresp_ram[bresp_wr_ptr]<= 2'b00;//均默认接收正常
     end
     
-    always_ff @( posedge aclk or negedge aresetn) begin : __bid_rd_ptr
+    always_ff @( posedge  aclk or negedge aresetn) begin : __bid_rd_ptr
         if(!aresetn)
             bid_rd_ptr <= 'b0;
         else if(out_bvalid&&in_bready)
             bid_rd_ptr <= bid_rd_ptr+1;
         end
-    always_ff @( posedge aclk or negedge aresetn) begin : __bid_wr_ptr
+    always_ff @( posedge  aclk or negedge aresetn) begin : __bid_wr_ptr
         if(!aresetn)
             bid_wr_ptr <= 'b0;
         else if(in_wlast && in_wvalid && out_wready)
             bid_wr_ptr <= bid_wr_ptr+1;
         end
-    always_ff @( posedge aclk or negedge aresetn) begin : __bid_ram
+    always_ff @( posedge  aclk or negedge aresetn) begin : __bid_ram
         if(!aresetn)
         for (integer i = 0; i < 2**AXI_ID_W; i = i + 1) begin
             bid_ram[i] <= 'b0;
@@ -181,24 +187,24 @@ always_ff @( posedge aclk or negedge aresetn) begin : __bresp_ram
         else if(in_wlast && in_wvalid && out_wready)
             bid_ram[bid_wr_ptr]<= in_wid;
         end
+//<<<
 
-
-//id 、 len
-        always_ff @( posedge aclk or negedge aresetn) begin : __arlen_rd_ptr
+//id 、 len>>>
+        always_ff @( posedge  aclk or negedge aresetn) begin : __arlen_rd_ptr
             if(!aresetn)
                 arlen_rd_ptr <= 'b0;
             else if(out_rlast)
                 arlen_rd_ptr <= arlen_rd_ptr+1;
             end
         
-        always_ff @( posedge aclk or negedge aresetn) begin : __arlen_wr_ptr
+        always_ff @( posedge  aclk or negedge aresetn) begin : __arlen_wr_ptr
             if(!aresetn)
                 arlen_wr_ptr <= 'b0;
             else if(in_arvalid && out_arready)
                 arlen_wr_ptr <= arlen_wr_ptr+1;
             end
         
-        always_ff @( posedge aclk or negedge aresetn) begin : __arlen_ram
+        always_ff @( posedge  aclk or negedge aresetn) begin : __arlen_ram
             if(!aresetn)
             for (integer i = 0; i < SLV_OSTDREQ_NUM; i = i + 1) begin
                 arlen_ram[i] <= 'b0;
@@ -207,21 +213,21 @@ always_ff @( posedge aclk or negedge aresetn) begin : __bresp_ram
                 arlen_ram[arlen_wr_ptr]<= in_arlen;
             end
             
-        always_ff @( posedge aclk or negedge aresetn) begin : __arid_rd_ptr
+        always_ff @( posedge  aclk or negedge aresetn) begin : __arid_rd_ptr
             if(!aresetn)
                 arid_rd_ptr <= 'b0;
             else if(out_rlast)
                 arid_rd_ptr <= arlen_rd_ptr+1;
             end
         
-        always_ff @( posedge aclk or negedge aresetn) begin : __arid_wr_ptr
+        always_ff @( posedge  aclk or negedge aresetn) begin : __arid_wr_ptr
             if(!aresetn)
                 arid_wr_ptr <= 'b0;
             else if(in_arvalid && out_arready)
                 arid_wr_ptr <= arlen_wr_ptr+1;
             end
         
-        always_ff @( posedge aclk or negedge aresetn) begin : __arid_ram
+        always_ff @( posedge  aclk or negedge aresetn) begin : __arid_ram
             if(!aresetn)
             for (integer i = 0; i < SLV_OSTDREQ_NUM; i = i + 1) begin
                 arid_ram[i] <= 'b0;
@@ -229,50 +235,50 @@ always_ff @( posedge aclk or negedge aresetn) begin : __bresp_ram
             else if(in_arvalid && out_arready)
                 arid_ram[arlen_wr_ptr]<= in_arid;
             end       
-        
+        //<<<
 //output:>>>
-assign out_rvalid= (req_remain_cnt!=0);
-assign out_rlast= (rdata_cnt==arlen_now) && out_rvalid;
-assign out_rid=arid_now;//!!!!fixme !!!!未考虑交织！！！！
-assign out_bvalid= (rsp_remain_cnt!=0);
-assign out_bid=bid_now;//!!!!fixme !!!!未考虑交织！！！！
-assign out_bresp=bresp_now;
-always @( posedge aclk or negedge aresetn) begin : __rdata//!!!fix me!!!can't syn 考虑prbs
+assign #(clk_period/5) out_rvalid= (req_remain_cnt!=0);
+assign #(clk_period/5) out_rlast= (rdata_cnt==arlen_now) && out_rvalid;
+assign #(clk_period/5) out_rid=arid_now;//!!!!fixme !!!!未考虑交织！！！！
+assign #(clk_period/5) out_bvalid= (rsp_remain_cnt!=0);
+assign #(clk_period/5) out_bid=bid_now;//!!!!fixme !!!!未考虑交织！！！！
+assign #(clk_period/5) out_bresp=bresp_now;
+always @( posedge  aclk or negedge aresetn) begin : __rdata//!!!fix me!!!can't syn 考虑prbs
     if(!aresetn)
-        out_rdata=#1 'b0;
+        out_rdata= #(clk_period/5) 'b0;
     else if(out_rvalid && in_rready)
-        out_rdata=#1 $random;    
+        out_rdata= #(clk_period/5) $random;    
 end
 
-always @( posedge aclk or negedge aresetn) begin : __rresp//!!!fix me!!!can't syn 考虑prbs
+always @( posedge  aclk or negedge aresetn) begin : __rresp//!!!fix me!!!can't syn 考虑prbs
     if(!aresetn)
-        out_rresp=#1 2'b00;
+        out_rresp= #(clk_period/5) 2'b00;
     else if(out_rvalid && in_rready)
-        out_rresp=#1 2'b00;    
+        out_rresp= #(clk_period/5) 2'b00;    
 end
-always_ff @( posedge aclk or negedge aresetn) begin : __out_awready
+always_ff @( posedge  aclk or negedge aresetn) begin : __out_awready
     if(!aresetn)
-        out_awready <= 'b0;
+        out_awready <= #(clk_period/5) 'b0;
     else if(always_ready)
-        out_awready<= 1;
+        out_awready<= #(clk_period/5) 1;
     else 
-        out_awready<= $random;//!!!!fixme !!!!完全随机！！！！
+        out_awready<=#(clk_period/5)  $random;//!!!!fixme !!!!完全随机！！！！
     end
 
-always_ff @( posedge aclk or negedge aresetn) begin : __out_wready
+always_ff @( posedge  aclk or negedge aresetn) begin : __out_wready
     if(!aresetn)
-        out_wready <= 'b0;
+        out_wready <= #(clk_period/5) 'b0;
     else if(always_ready)
-        out_wready<= 1;
+        out_wready<= #(clk_period/5) 1;
     else
-        out_wready<= $random;//!!!!fixme !!!!完全随机！！！！
+        out_wready<=#(clk_period/5)  $random;//!!!!fixme !!!!完全随机！！！！
     end
 
-always_ff @( posedge aclk or negedge aresetn) begin : __out_arready
+always_ff @( posedge  aclk or negedge aresetn) begin : __out_arready
     if(!aresetn)
-        out_arready <= 'b0;
+        out_arready <= #(clk_period/5) 'b0;
     else 
-        out_arready<= $random;//!!!!fixme !!!!完全随机！！！！
+        out_arready<=#(clk_period/5)  $random;//!!!!fixme !!!!完全随机！！！！
     end
 //<<<
 

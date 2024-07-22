@@ -16,7 +16,11 @@ module ahb_slv_responder #(
     parameter WCH_W  = 47,
     parameter BCH_W  = 12,
     parameter ARCH_W = 53,
-    parameter RCH_W  = 45)
+    parameter RCH_W  = 45,
+    
+    parameter clk_period = 5
+    
+    )
     //para<<<
     //if>>>
     (
@@ -34,12 +38,17 @@ module ahb_slv_responder #(
 	input 	 				hbusreq, 
 	input 					hlock,
 	//ahb input
-	output	logic	[63:0]		hrdata,
+	output	logic	[31:0]		hrdata,
 	output	logic				hready,
 	output	logic	[1:0]		hresp,
 	output	logic				hgrant,
 	output	logic	[3:0]		hmaster
     );
+parameter DATA_BITS = 26;
+parameter  PARITY_BITS = 6     ;
+parameter k = DATA_BITS;
+parameter r = PARITY_BITS;
+
     //if<<<
 //vari def>>>
 //counter 
@@ -59,6 +68,7 @@ module ahb_slv_responder #(
     logic [2          - 1 : 0] bresp_now;
     logic [AXI_ID_W           - 1 : 0] bid_now;
     logic [AXI_ID_W           - 1 : 0] arid_now;
+    logic	[31:0]		hrdata_databit;
     // logic   out_wlast_prev;
     // logic   out_wvalid_prev;
 // //queue 
@@ -74,215 +84,116 @@ module ahb_slv_responder #(
 
     //<<<
 
+    always @( posedge  hclk or negedge hresetn) begin : __rdata//!!!fixme!!!can't syn 考虑prbs
+        if(!hresetn )
+            hrdata_databit<=  'b0;
+        else if(!hwrite &&( (htrans==`NONSEQ) || (htrans==`SEQ)) && hready)
+            hrdata_databit<=  hrdata_databit+1;
+    end
+    
+ //output>>>   
 //arbiter>>>
-always_ff @( negedge  hclk or negedge hresetn) begin : __hgrant
+always_ff @( posedge  hclk or negedge hresetn) begin : __hgrant
         if(!hresetn)
-            hgrant<=0;
+            hgrant<=#(clk_period/5) 0;
         else if( hbusreq) //fixme 只适用总线上只有一对主从机的情况
-            hgrant<=1;
+            hgrant<=#(clk_period/5) 1;
 
         //fixme hgrant 又拉低的情况
     end
 
-always_ff @( negedge  hclk or negedge hresetn) begin : __hmaster
+always_ff @( posedge  hclk or negedge hresetn) begin : __hmaster
         if(!hresetn)
-            hmaster<=0;
+            hmaster<=#(clk_period/5) 0;
         else if( hgrant && hready)
-            hmaster<=1;
+            hmaster<=#(clk_period/5) 1;
 
     end
-//arbiter<<<
-//comb>>>
-    // assign bresp_now=bresp_ram[bresp_rd_ptr];
-    // assign bid_now=bid_ram[bid_rd_ptr];
 
 
-    // assign arlen_now=arlen_ram[arlen_rd_ptr];
-    // assign arid_now=arid_ram[arid_rd_ptr];
+assign #(clk_period/5)  hrdata=hanming(hrdata_databit);
 
-    //<<<
-//sequential>>>
 
-//counter>>>
-//     always_ff @( negedge  aclk or negedge aresetn) begin : __rsp_remain_cnt
-//         if(!aresetn)
-//             rsp_remain_cnt<=0;
-//         else if( (in_wlast && in_wvalid && out_wready) && (out_bvalid && in_bready))
-//             rsp_remain_cnt<=rsp_remain_cnt;
-//         else if(out_bvalid && in_bready)
-//             rsp_remain_cnt<=rsp_remain_cnt-1;
-//         else if(in_wlast && in_wvalid && out_wready)
-//             rsp_remain_cnt<=rsp_remain_cnt+1; 
-        
-//     end
-
-// always_ff @( negedge  aclk or negedge aresetn) begin : __req_remain_cnt
-//     if(!aresetn)
-//         req_remain_cnt<=0;
-//     else if(in_arvalid && out_arready && out_rlast)
-//         req_remain_cnt<=req_remain_cnt;
-//     else if(in_arvalid && out_arready)
-//         req_remain_cnt<=req_remain_cnt+1;
-//     else if(out_rlast && out_rvalid && in_rready)
-//         req_remain_cnt<=req_remain_cnt-1; 
-// end
-
-// always_ff @( negedge  aclk or negedge aresetn) begin : __rdata_cnt
-//     if(!aresetn)
-//         rdata_cnt<=0;
-//     else if(out_rlast && out_rvalid && in_rready)
-//         rdata_cnt<=0;
-//     else if(out_rvalid && in_rready)
-//         rdata_cnt<=rdata_cnt+1;
-    
-// end
-
-//<<<
-  
-//ram
-
-//rsp>>>
-// always_ff @( negedge  aclk or negedge aresetn) begin : __bresp_rd_ptr
-//     if(!aresetn)
-//         bresp_rd_ptr <= 'b0; 
-//     else if(out_bvalid&&in_bready)
-//         bresp_rd_ptr <= bresp_rd_ptr+1;
-//     end
-// always_ff @( negedge  aclk or negedge aresetn) begin : __bresp_wr_ptr
-//     if(!aresetn)
-//         bresp_wr_ptr <= 'b0;
-//     else if(in_wlast && out_rvalid && in_rready)
-//         bresp_wr_ptr <= bresp_wr_ptr+1;
-//     end
-// always_ff @( negedge  aclk or negedge aresetn) begin : __bresp_ram
-//     if(!aresetn)
-//     for (integer i = 0; i < 2**AXI_ID_W; i = i + 1) begin
-//         bresp_ram[i] <= 'b0;
-//       end
-//     else if(in_wlast)
-//         bresp_ram[bresp_wr_ptr]<= 2'b00;//均默认接收正常
-//     end
-    
-//     always_ff @( negedge  aclk or negedge aresetn) begin : __bid_rd_ptr
-//         if(!aresetn)
-//             bid_rd_ptr <= 'b0;
-//         else if(out_bvalid&&in_bready)
-//             bid_rd_ptr <= bid_rd_ptr+1;
-//         end
-//     always_ff @( negedge  aclk or negedge aresetn) begin : __bid_wr_ptr
-//         if(!aresetn)
-//             bid_wr_ptr <= 'b0;
-//         else if(in_wlast && in_wvalid && out_wready)
-//             bid_wr_ptr <= bid_wr_ptr+1;
-//         end
-//     always_ff @( negedge  aclk or negedge aresetn) begin : __bid_ram
-//         if(!aresetn)
-//         for (integer i = 0; i < 2**AXI_ID_W; i = i + 1) begin
-//             bid_ram[i] <= 'b0;
-//           end
-//         else if(in_wlast && in_wvalid && out_wready)
-//             bid_ram[bid_wr_ptr]<= in_wid;
-//         end
-//rsp<<<
-
-//id 、 len>>>
-        // always_ff @( negedge  aclk or negedge aresetn) begin : __arlen_rd_ptr
-        //     if(!aresetn)
-        //         arlen_rd_ptr <= 'b0;
-        //     else if(out_rlast)
-        //         arlen_rd_ptr <= arlen_rd_ptr+1;
-        //     end
-        
-        // always_ff @( negedge  aclk or negedge aresetn) begin : __arlen_wr_ptr
-        //     if(!aresetn)
-        //         arlen_wr_ptr <= 'b0;
-        //     else if(in_arvalid && out_arready)
-        //         arlen_wr_ptr <= arlen_wr_ptr+1;
-        //     end
-        
-        // always_ff @( negedge  aclk or negedge aresetn) begin : __arlen_ram
-        //     if(!aresetn)
-        //     for (integer i = 0; i < SLV_OSTDREQ_NUM; i = i + 1) begin
-        //         arlen_ram[i] <= 'b0;
-        //       end
-        //     else if(in_arvalid && out_arready)
-        //         arlen_ram[arlen_wr_ptr]<= in_arlen;
-        //     end
-            
-        // always_ff @( negedge  aclk or negedge aresetn) begin : __arid_rd_ptr
-        //     if(!aresetn)
-        //         arid_rd_ptr <= 'b0;
-        //     else if(out_rlast)
-        //         arid_rd_ptr <= arlen_rd_ptr+1;
-        //     end
-        
-        // always_ff @( negedge  aclk or negedge aresetn) begin : __arid_wr_ptr
-        //     if(!aresetn)
-        //         arid_wr_ptr <= 'b0;
-        //     else if(in_arvalid && out_arready)
-        //         arid_wr_ptr <= arlen_wr_ptr+1;
-        //     end
-        
-        // always_ff @( negedge  aclk or negedge aresetn) begin : __arid_ram
-        //     if(!aresetn)
-        //     for (integer i = 0; i < SLV_OSTDREQ_NUM; i = i + 1) begin
-        //         arid_ram[i] <= 'b0;
-        //         end
-        //     else if(in_arvalid && out_arready)
-        //         arid_ram[arlen_wr_ptr]<= in_arid;
-        //     end       
-//id 、 len<<<       
-//output:>>>
-// assign out_rvalid= (req_remain_cnt!=0);
-// assign out_rlast= (rdata_cnt==arlen_now) && out_rvalid;
-// assign out_rid=arid_now;//!!!!fixme !!!!未考虑交织！！！！
-// assign out_bvalid= (rsp_remain_cnt!=0);
-// assign out_bid=bid_now;//!!!!fixme !!!!未考虑交织！！！！
-// assign out_bresp=bresp_now;
-always @( negedge  hclk or negedge hresetn) begin : __rdata//!!!fixme!!!can't syn 考虑prbs
-    if(!hresetn )
-        hrdata<= 'b0;
-    else if(!hwrite &&( (htrans==`NONSEQ) || (htrans==`SEQ)) && hready)
-        hrdata<= hrdata+1;
-end
-
-always_ff @( negedge  hclk or negedge hresetn) begin : __hready
+always_ff @( posedge  hclk or negedge hresetn) begin : __hready
     if(!hresetn)
-        hready <= 'b0;
+        hready <= #(clk_period/5) 'b0;
     else if(always_ready)
-        hready <= 1;
+        hready <=#(clk_period/5)  1;
     else 
         hready<= 1;//!!!!fixme !!!!不考虑没有ready的情况！！！！
     end
 
-always_ff @( negedge  hclk or negedge hresetn) begin : __hresp
+always_ff @( posedge  hclk or negedge hresetn) begin : __hresp
     if(!hresetn)
-        hresp<= 'b0;
+        hresp<= #(clk_period/5) 'b0;
     else
-        hresp<= 'b0;
+        hresp<= #(clk_period/5) 'b0;
     // else if(always_ready)
     //     hresp <= 1;
     // else 
     //     hresp<= 1;//!!!!fixme !!!!不考虑没有ready的情况！！！！
     end
 
+//output<<<    
+//function>>>
+    function automatic  logic hanming(logic [k:1] Data  ); 
+
+	// declare the signals and local parameters   
+  
+   reg [k:1] Data_in_08p;
+	 reg [k:1] Data_out_10p; // only data bits
+	 reg [r:1] Parity_out_10p; // only parity bits
+	 reg [k+r:1] DataParity_out_10p;
+	 reg DataParity_valid_10p;
+	
+	// intermediate signals
+	reg [r:1] Parity;
+	reg [k+r:1] DataParity;
+	reg data_valid_int; // internal enable signal for output FFs
 
 
-// always_ff @( negedge  aclk or negedge aresetn) begin : __out_wready
-//     if(!aresetn)
-//         out_wready <= 'b0;
-//     else if(always_ready)
-//         out_wready<= 1;
-//     else
-//         out_wready<= $random;//!!!!fixme !!!!完全随机！！！！
-//     end
+	// combinational logic: Parity trees
+	reg [k+r-1:1] data_parity_i; // this will use only r-1:1 bits of parity vector
+	integer i,j,l,cnt;
+	reg a;
+		  
+	  // find the interspersed vector
+	  j = 1; l = 1;
+	  while ( (j<k+r) || (l<=k)) begin
+	    if ( j == ((~j+1)&j)) begin	//check if it is a parity bit position
+	      data_parity_i[j] = 1'b0;
+	      j = j+1;
+	    end
+	    else begin
+	      data_parity_i[j] = Data[l];
+	      j = j+1; l = l+1;
+	    end
+	  end
+	  
+	  // find the parity bits r-1 to 1
+	  for(i=1;i<r;i=i+1) begin
+	  	cnt = 1;
+		  a = cnt[i-1] & data_parity_i[1];
+		  for(cnt=2;cnt<(k+r);cnt=cnt+1) begin
+		  	a = a ^ (data_parity_i[cnt] & cnt[i-1]);
+		  end
+		  Parity[i]	= a;
+	  end 
 
-// always_ff @( negedge  aclk or negedge aresetn) begin : __out_arready
-//     if(!aresetn)
-//         out_arready <= 'b0;
-//     else 
-//         out_arready<= $random;//!!!!fixme !!!!完全随机！！！！
-//     end
-//<<<
+	  Parity[r] = (^Parity[r-1:1])^(^data_parity_i); // this bit used for double error detection 
+
+		DataParity = {	Parity[6],
+						Data[26:12],		//[17:31]
+						Parity[5],			//[16]
+						Data[11:5],			//[9:15]
+						Parity[4],			//[8]
+						Data[4:2],			//[5:7]
+						Parity[3],			//[4]
+						Data[1],			//[3]
+						Parity[2:1]}; 		//[2][1]
+            return DataParity; 
+endfunction
+                
+//func<<<  
 
 endmodule
