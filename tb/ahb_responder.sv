@@ -70,7 +70,7 @@ parameter r = PARITY_BITS;
     logic [2          - 1 : 0] bresp_now;
     logic [AXI_ID_W           - 1 : 0] bid_now;
     logic [AXI_ID_W           - 1 : 0] arid_now;
-    logic	[31:0]		hrdata_databit;
+    logic	[26-1:0]		hrdata_databit;
     // logic   out_wlast_prev;
     // logic   out_wvalid_prev;
 // //queue 
