@@ -2196,7 +2196,7 @@ force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
 
     $display("\n *******test_status=16 ,SLV0 rd priority test finish!!!******* \n");
     //<<<
-    //case 16 ecc>>>
+    //case 17 ecc>>>
 
     force tb_withbridge.ahb_slv_responder_inst.ecc_error=1;
     test_status=17 ;
