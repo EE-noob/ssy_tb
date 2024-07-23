@@ -2200,7 +2200,7 @@ force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
 
     force tb_withbridge.ahb_slv_responder_inst.ecc_error=1;
     test_status=17 ;
-    ar_req(`MST0,`SLV2,rd_req_id,`INCR,`SLV2_END_ADDR-18,12);
+    ar_req(`MST0,`SLV2,rd_req_id,`INCR,`SLV2_START_ADDR+2,7);//`SLV2_END_ADDR-18,12);
     @(negedge aclk);
     wait(mst0_arvalid && mst0_arready);
     //rd_req_id+=1;
