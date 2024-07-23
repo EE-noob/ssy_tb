@@ -2199,6 +2199,8 @@ force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
     //case 17 ecc>>>
 
     force tb_withbridge.ahb_slv_responder_inst.ecc_error=1;
+    force tb_withbridge.ahb_slv_responder_inst.hrdata_databit=0;
+    release tb_withbridge.ahb_slv_responder_inst.hrdata_databit;
     test_status=17 ;
     ar_req(`MST0,`SLV2,rd_req_id,`INCR,`SLV2_START_ADDR+2,7);//`SLV2_END_ADDR-18,12);
     @(negedge aclk);

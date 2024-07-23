@@ -113,7 +113,7 @@ always_ff @( posedge  hclk or negedge hresetn) begin : __hmaster
     end
 
 
-assign #(clk_period/5)  hrdata=hanming(hrdata_databit,ecc_error?hrdata:0);
+assign #(clk_period/5)  hrdata=hanming(hrdata_databit,ecc_error?hrdata_databit:0);
 
 
 always_ff @( posedge  hclk or negedge hresetn) begin : __hready
