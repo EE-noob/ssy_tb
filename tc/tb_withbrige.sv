@@ -2205,16 +2205,16 @@ force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
     wait(mst0_arvalid && mst0_arready);
     //rd_req_id+=1;
     ar_req_clr(`MST0);
-    $display("\n *******test_status=17 ,ecc test finish!!!******* \n");
+    $display("\n *******test_status=16 ,ecc test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 //<<<
     //for cov>>>
-    test_status=17;
-    repeat(1<<12)begin
-      apb_wr(0,{{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},{1'b0},{7{1'b0}}});
-      repeat(20)@(negedge aclk);
-      apbWrNum+=1;
-    end
+    // test_status=17;
+    // repeat(1<<12)begin
+    //   apb_wr(0,{{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},{1'b0},{7{1'b0}}});
+    //   repeat(20)@(negedge aclk);
+    //   apbWrNum+=1;
+    // end
     // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[0].slv_switch.arch_round_arbiter.MST_PRI=0;
     // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[0].slv_switch.wch_round_arbiter.MST_PRI=0;
     // force tb_withbridge.axi_crossbar_top_inst.switch_top.INSTANTIATE_SLV_SWITCH[0].slv_switch.awch_round_arbiter.MST_PRI=0;
