@@ -138,7 +138,7 @@ always_ff @( posedge  hclk or negedge hresetn) begin : __hresp
 
 //output<<<    
 //function>>>
-    function automatic  logic hanming(logic [k:1] Data ,int errbit ); 
+    function automatic  logic [31:0] hanming(logic [k:1] Data ,int errbit ); 
 
 	// declare the signals and local parameters   
   
