@@ -37,6 +37,8 @@ module ahb_slv_responder #(
 	input 	 	[63:0]		hwdata,
 	input 	 				hbusreq, 
 	input 					hlock,
+
+    input                   ecc_error,
 	//ahb input
 	output	logic	[31:0]		hrdata,
 	output	logic				hready,
@@ -90,7 +92,7 @@ parameter r = PARITY_BITS;
         else if(!hwrite &&( (htrans==`NONSEQ) || (htrans==`SEQ)) && hready)
             hrdata_databit<=  hrdata_databit+1;
     end
-    
+
  //output>>>   
 //arbiter>>>
 always_ff @( posedge  hclk or negedge hresetn) begin : __hgrant
@@ -111,7 +113,7 @@ always_ff @( posedge  hclk or negedge hresetn) begin : __hmaster
     end
 
 
-assign #(clk_period/5)  hrdata=hanming(hrdata_databit);
+assign #(clk_period/5)  hrdata=hanming(hrdata_databit,ecc_error?hrdata:0);
 
 
 always_ff @( posedge  hclk or negedge hresetn) begin : __hready
@@ -136,7 +138,7 @@ always_ff @( posedge  hclk or negedge hresetn) begin : __hresp
 
 //output<<<    
 //function>>>
-    function automatic  logic hanming(logic [k:1] Data  ); 
+    function automatic  logic hanming(logic [k:1] Data ,int errbit ); 
 
 	// declare the signals and local parameters   
   
@@ -191,7 +193,13 @@ always_ff @( posedge  hclk or negedge hresetn) begin : __hresp
 						Parity[3],			//[4]
 						Data[1],			//[3]
 						Parity[2:1]}; 		//[2][1]
-            return DataParity; 
+
+        if (errbit==0)                
+            ; 
+        else
+            DataParity[errbit]=~DataParity[errbit]; 
+
+        return DataParity;
 endfunction
                 
 //func<<<  

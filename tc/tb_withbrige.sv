@@ -74,7 +74,9 @@ parameter ARCH_W = 51;  //2+2+3+8+4+32
 parameter RCH_W  = 38;  //32+2+4     
 //CAM parameters
 parameter CAM_ADDR_WIDTH = 4  ;
-
+//ecc para
+parameter ECC_DATA_BUS = 26;
+parameter ECC_PARITY_BITS = 6;
 //para<<<
 //vari>>>
 integer  err_count;
@@ -318,6 +320,7 @@ logic  [AXI_ID_W      -1:0] slv2_rid;
 logic   [2             -1:0] slv2_rresp;
 logic   [AXI_DATA_W    -1:0] slv2_rdata;
 logic  slv2_rlast;
+
 //xbar<<<
 
 //axi2ahb>>>
@@ -352,7 +355,12 @@ logic                       PREADY;
 logic                      low_power_n;
 
 //apb<<<
-
+//ecc>>>
+logic                      CErr1;
+logic                      CErr2;
+logic [ECC_DATA_BUS : 1]   ECC_Data_out;
+logic                      ECC_Data_out_valid;
+//ecc<<<
 //dut>>>
 
 //xbar>>>
@@ -599,7 +607,11 @@ axi_crossbar_top_inst (
     .ahb_htrans(htrans),
     .ahb_hwdata(hwdata),
     .ahb_hwrite(hwrite),
-    .ahb_hbusreq(hbusreq)
+    .ahb_hbusreq(hbusreq),
+    .CErr1(CErr1),
+    .CErr2(CErr2),
+    .ECC_Data_out(ECC_Data_out),
+    .ECC_Data_out_valid(ECC_Data_out_valid)
 );
 //xbar<<<
 
@@ -1896,7 +1908,7 @@ initial begin
       axi_init();
       apb_init();
     join
-
+force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
     //low power && priority
     apb_wr(0,{{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},{1'b0},{7{1'b0}}});
     repeat(20)@(negedge aclk);
@@ -2183,11 +2195,21 @@ initial begin
     repeat(100) @(negedge aclk);
 
     $display("\n *******test_status=16 ,SLV0 rd priority test finish!!!******* \n");
+    //<<<
+    //case 16 ecc>>>
 
-
-
+    force tb_withbridge.ahb_slv_responder_inst.ecc_error=1;
+    test_status=16 ;
+    ar_req(`MST0,`SLV2,rd_req_id,`INCR,`SLV2_END_ADDR-18,12);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    //rd_req_id+=1;
+    ar_req_clr(`MST0);
+    $display("\n *******test_status=17 ,ecc test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+//<<<
     //for cov>>>
-    test_status=16;
+    test_status=17;
     repeat(1<<12)begin
       apb_wr(0,{{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},{1'b0},{7{1'b0}}});
       repeat(20)@(negedge aclk);
