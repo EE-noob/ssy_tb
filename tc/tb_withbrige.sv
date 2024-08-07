@@ -1620,7 +1620,7 @@ begin
   @(negedge aclk);
   wait(mst0_arvalid && mst0_arready);
   rd_req_id+=1;
-  ar_req_clr(`MST0);
+  ar_req_clr(`MST0); 
 end
 endtask
 
@@ -1909,6 +1909,8 @@ initial begin
       apb_init();
     join
 force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
+force tb_withbridge.axi_slv0_responder_inst.ecc_error=0; 
+force tb_withbridge.axi_slv1_responder_inst.ecc_error=0; 
     //low power && priority
     apb_wr(0,{{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},{1'b0},{7{1'b0}}});
     repeat(20)@(negedge aclk);
@@ -2196,7 +2198,7 @@ force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
 
     $display("\n *******test_status=16 ,SLV0 rd priority test finish!!!******* \n");
     //<<<
-    //case 17 ecc>>>
+    //case 18 ecc>>>
 
     force tb_withbridge.ahb_slv_responder_inst.ecc_error=1;
     force tb_withbridge.ahb_slv_responder_inst.hrdata_databit=0;
@@ -2207,7 +2209,19 @@ force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
     wait(mst0_arvalid && mst0_arready);
     //rd_req_id+=1;
     ar_req_clr(`MST0);
-    $display("\n *******test_status=17 ,ecc test finish!!!******* \n");
+    $display("\n *******test_status=17 ,ecc 1bit err test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    force tb_withbridge.ahb_slv_responder_inst.ecc_error=2;
+    force tb_withbridge.ahb_slv_responder_inst.hrdata_databit=0;
+    release tb_withbridge.ahb_slv_responder_inst.hrdata_databit;
+    test_status=18 ;
+    ar_req(`MST0,`SLV2,rd_req_id,`INCR,`SLV2_START_ADDR+2,7);//`SLV2_END_ADDR-18,12);
+    @(negedge aclk);
+    wait(mst0_arvalid && mst0_arready);
+    //rd_req_id+=1;
+    ar_req_clr(`MST0);
+    $display("\n *******test_status=18 ,ecc 2bit err test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 //<<<
     //for cov>>>

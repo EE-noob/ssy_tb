@@ -4,9 +4,9 @@ module tb_top();
 
 //localparam >>>
 
-localparam clk_period=20 ;
+//localparam clk_period=20 ;
 localparam testnum =4 ;
-//localpara half_clk_period=2.5 ;
+localparam half_clk_period=2.5 ;
 //<<<
 // Parameters>>>
 parameter APB_ADDR_WIDTH = 32;
@@ -1547,7 +1547,7 @@ endtask
 //fsdb
 initial
 begin
-if($test$plusargs("dump_fsdb"))
+//if($test$plusargs("dump_fsdb"))
 begin
 $fsdbDumpfile("testname.fsdb");  //记录波形，波形名字testname.fsdb
 $fsdbDumpvars("+all");  //+all参数，dump SV中的struct结构体
@@ -1566,12 +1566,14 @@ begin
   $dumpfile("xbar.dump");
   $dumpvars;
 end
-end
+end 
 initial
-  $sdf_annotate("axi_crossbar_top.sdf",dut);
-
+begin
+$sdf_annotate("../../icc/output/axi_crossbar_top.sdf",axi_crossbar_top,,"sdf.log");
+$display(" **************** SDF *********************");
+end
 initial begin
-    #(1e6*clk_period);
+    #(1e6*half_clk_period);
     $display ("!!!!!!ERROR Timeout !!!!!!!! at time %t", $time);
     
     $finish;
@@ -1604,7 +1606,7 @@ initial begin
 
 
   //always>>>
-always #(clk_period/2)  aclk = ~ aclk ;
+always #(half_clk_period)  aclk = ~ aclk ;
   //comb
 assign mst0_arlen=mst0_arlen_real;
 assign mst1_arlen=mst1_arlen_real;
@@ -1634,12 +1636,12 @@ initial begin
     test_status=3; 
     mst0_256_burst();
     $display("\n *******256 length burst test finish!!!******* \n");
-    repeat(500) @(negedge aclk);
+    repeat(1500) @(negedge aclk);
 
     test_status=4;
     mst0_fixed_burst();
     $display("\n *******fixed burst test finish!!!******* \n");
-    repeat(100) @(negedge aclk);
+    repeat(1100) @(negedge aclk);
 
     test_status=5;
     mst0_wrap_burst();

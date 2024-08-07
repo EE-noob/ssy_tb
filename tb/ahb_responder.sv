@@ -38,7 +38,7 @@ module ahb_slv_responder #(
 	input 	 				hbusreq, 
 	input 					hlock,
 
-    input                   ecc_error,
+    input       [1:0]            ecc_error,
 	//ahb input
 	output	logic	[31:0]		hrdata,
 	output	logic				hready,
@@ -52,6 +52,78 @@ parameter k = DATA_BITS;
 parameter r = PARITY_BITS;
 
     //if<<<
+//function>>>
+function automatic  logic [31:0] hanming(logic [k:1] Data ,int errbit ); 
+
+// declare the signals and local parameters   
+
+reg [k:1] Data_in_08p;
+ reg [k:1] Data_out_10p; // only data bits
+ reg [r:1] Parity_out_10p; // only parity bits
+ reg [k+r:1] DataParity_out_10p;
+ reg DataParity_valid_10p;
+
+// intermediate signals
+reg [r:1] Parity;
+reg [k+r:1] DataParity;
+reg data_valid_int; // internal enable signal for output FFs
+
+
+// combinational logic: Parity trees
+reg [k+r-1:1] data_parity_i; // this will use only r-1:1 bits of parity vector
+integer i,j,l,cnt;
+reg a;
+      
+  // find the interspersed vector
+  j = 1; l = 1;
+  while ( (j<k+r) || (l<=k)) begin
+    if ( j == ((~j+1)&j)) begin	//check if it is a parity bit position
+      data_parity_i[j] = 1'b0;
+      j = j+1;
+    end
+    else begin
+      data_parity_i[j] = Data[l];
+      j = j+1; l = l+1;
+    end
+  end
+  
+  // find the parity bits r-1 to 1
+  for(i=1;i<r;i=i+1) begin
+      cnt = 1;
+      a = cnt[i-1] & data_parity_i[1];
+      for(cnt=2;cnt<(k+r);cnt=cnt+1) begin
+          a = a ^ (data_parity_i[cnt] & cnt[i-1]);
+      end
+      Parity[i]	= a;
+  end 
+
+  Parity[r] = (^Parity[r-1:1])^(^data_parity_i); // this bit used for double error detection 
+
+    DataParity = {	Parity[6],
+                    Data[26:12],		//[17:31]
+                    Parity[5],			//[16]
+                    Data[11:5],			//[9:15]
+                    Parity[4],			//[8]
+                    Data[4:2],			//[5:7]
+                    Parity[3],			//[4]
+                    Data[1],			//[3]
+                    Parity[2:1]}; 		//[2][1]
+
+    if (errbit==0)                
+        ; 
+    else if(errbit==1)
+        DataParity[1]=~DataParity[1]; 
+        else if(errbit==2)
+            DataParity[2:1]=~DataParity[2:1];
+            else
+                ;
+
+
+    return DataParity;
+endfunction
+            
+//func<<<  
+
 //vari def>>>
 //counter 
     logic [2**4-1:0]                    rdata_cnt;
@@ -113,8 +185,8 @@ always_ff @( posedge  hclk or negedge hresetn) begin : __hmaster
     end
 
 
-assign #(clk_period/5)  hrdata=hanming(hrdata_databit,ecc_error?hrdata_databit:0);
-
+//assign #(clk_period/5)  hrdata=hanming(hrdata_databit,ecc_error?hrdata_databit:0);
+    assign #(clk_period/5)  hrdata=hanming(hrdata_databit,ecc_error);
 
 always_ff @( posedge  hclk or negedge hresetn) begin : __hready
     if(!hresetn)
@@ -137,71 +209,5 @@ always_ff @( posedge  hclk or negedge hresetn) begin : __hresp
     end
 
 //output<<<    
-//function>>>
-    function automatic  logic [31:0] hanming(logic [k:1] Data ,int errbit ); 
-
-	// declare the signals and local parameters   
-  
-   reg [k:1] Data_in_08p;
-	 reg [k:1] Data_out_10p; // only data bits
-	 reg [r:1] Parity_out_10p; // only parity bits
-	 reg [k+r:1] DataParity_out_10p;
-	 reg DataParity_valid_10p;
-	
-	// intermediate signals
-	reg [r:1] Parity;
-	reg [k+r:1] DataParity;
-	reg data_valid_int; // internal enable signal for output FFs
-
-
-	// combinational logic: Parity trees
-	reg [k+r-1:1] data_parity_i; // this will use only r-1:1 bits of parity vector
-	integer i,j,l,cnt;
-	reg a;
-		  
-	  // find the interspersed vector
-	  j = 1; l = 1;
-	  while ( (j<k+r) || (l<=k)) begin
-	    if ( j == ((~j+1)&j)) begin	//check if it is a parity bit position
-	      data_parity_i[j] = 1'b0;
-	      j = j+1;
-	    end
-	    else begin
-	      data_parity_i[j] = Data[l];
-	      j = j+1; l = l+1;
-	    end
-	  end
-	  
-	  // find the parity bits r-1 to 1
-	  for(i=1;i<r;i=i+1) begin
-	  	cnt = 1;
-		  a = cnt[i-1] & data_parity_i[1];
-		  for(cnt=2;cnt<(k+r);cnt=cnt+1) begin
-		  	a = a ^ (data_parity_i[cnt] & cnt[i-1]);
-		  end
-		  Parity[i]	= a;
-	  end 
-
-	  Parity[r] = (^Parity[r-1:1])^(^data_parity_i); // this bit used for double error detection 
-
-		DataParity = {	Parity[6],
-						Data[26:12],		//[17:31]
-						Parity[5],			//[16]
-						Data[11:5],			//[9:15]
-						Parity[4],			//[8]
-						Data[4:2],			//[5:7]
-						Parity[3],			//[4]
-						Data[1],			//[3]
-						Parity[2:1]}; 		//[2][1]
-
-        if (errbit==0)                
-            ; 
-        else
-            DataParity[errbit]=~DataParity[errbit]; 
-
-        return DataParity;
-endfunction
-                
-//func<<<  
 
 endmodule

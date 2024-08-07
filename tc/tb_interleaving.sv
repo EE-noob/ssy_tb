@@ -4,9 +4,9 @@ module tb_interleaving();
 
 //localparam >>>
 
-localparam clk_period=20 ;
+//localparam clk_period=20 ;
 localparam testnum =4 ;
-//localpara half_clk_period=2.5 ;
+localparam half_clk_period=2.5 ;
 //<<<
 // Parameters>>>
 parameter APB_ADDR_WIDTH = 32;
@@ -371,7 +371,7 @@ axi_crossbar_top_inst (
   
   .mst0_aclk(aclk),
   .mst0_aresetn(aresetn),
-  .mst0_srst(srst),
+
   .mst0_awvalid(mst0_awvalid),
   .mst0_awready(mst0_awready),
   .mst0_awaddr(mst0_awaddr),
@@ -406,7 +406,7 @@ axi_crossbar_top_inst (
   .mst0_rlast(mst0_rlast),
   .mst1_aclk(aclk),
   .mst1_aresetn(aresetn),
-  .mst1_srst(srst),
+  
   .mst1_awvalid(mst1_awvalid),
   .mst1_awready(mst1_awready),
   .mst1_awaddr(mst1_awaddr),
@@ -441,7 +441,7 @@ axi_crossbar_top_inst (
   .mst1_rlast(mst1_rlast),
   .mst2_aclk(aclk),
   .mst2_aresetn(aresetn),
-  .mst2_srst(srst),
+
   .mst2_awvalid(mst2_awvalid),
   .mst2_awready(mst2_awready),
   .mst2_awaddr(mst2_awaddr),
@@ -476,7 +476,7 @@ axi_crossbar_top_inst (
   .mst2_rlast(mst2_rlast),
   .slv0_aclk(aclk),
   .slv0_aresetn(aresetn),
-  .slv0_srst(srst),
+
   .slv0_awvalid(slv0_awvalid),
   .slv0_awready(slv0_awready),
   .slv0_awaddr(slv0_awaddr),
@@ -511,7 +511,7 @@ axi_crossbar_top_inst (
   .slv0_rlast(slv0_rlast),
   .slv1_aclk(aclk),
   .slv1_aresetn(aresetn),
-  .slv1_srst(srst),
+
   .slv1_awvalid(slv1_awvalid),
   .slv1_awready(slv1_awready),
   .slv1_awaddr(slv1_awaddr),
@@ -546,7 +546,7 @@ axi_crossbar_top_inst (
   .slv1_rlast(slv1_rlast),
   .slv2_aclk(aclk),
   .slv2_aresetn(aresetn),
-  .slv2_srst(srst),
+
   .slv2_awvalid(slv2_awvalid),
   .slv2_awready(slv2_awready),
   .slv2_awaddr(slv2_awaddr),
@@ -1478,46 +1478,79 @@ begin
   aw_req(`MST0,`SLV0,0,`INCR,32,2);
   @(negedge aclk);
   wait(mst0_awvalid && mst0_awready);
+  aw_req(`MST0,`SLV0,1,`INCR,4104,1);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  aw_req(`MST0,`SLV0,2,`INCR,64,3);
+  @(negedge aclk);
+  wait(mst0_awvalid && mst0_awready);
+  aw_req_clr(`MST0);
+  @(negedge aclk);
+
 
 //send id=0
   wr(`MST0,0,32'h1111_1111, 4'b1111);
-  aw_req(`MST0,`SLV0,1,`INCR,4104,1);
-  @(negedge aclk);
-
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(negedge aclk)
   wr(`MST0,0,32'h2222_2222, 4'b1111);
-  aw_req(`MST0,`SLV0,2,`INCR,64,3);
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
   @(negedge aclk);
-
   wr(`MST0,0,32'h3333_3333, 4'b1111);
   mst0_wlast=1;
-  aw_req_clr(`MST0);
-  @(negedge aclk); 
+
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(negedge aclk)
+
+ 
   
   // wr_clr(`MST0);
   // @(negedge aclk);
 //send id=2  
   wr(`MST0,2,32'h1111_1111, 4'b1111);
   mst0_wlast=0;
-  @(negedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(negedge aclk)
 
   wr(`MST0,2,32'h2222_2222, 4'b1111);
-  @(negedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(negedge aclk)
 
   wr(`MST0,2,32'h3333_3333, 4'b1111);
-  @(negedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(negedge aclk)
 
   wr(`MST0,2,32'h4444_4444, 4'b1111);
   mst0_wlast=1;
-  @(negedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(negedge aclk)
   
   //send id=1  
   wr(`MST0,1,32'h1111_1111, 4'b1111);
   mst0_wlast=0;
-  @(negedge aclk);
-
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(negedge aclk)
   wr(`MST0,1,32'h2222_2222, 4'b1111);
   mst0_wlast=1;
-  @(negedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(posedge aclk);
+  wait(mst0_wvalid && mst0_wready);
+  @(negedge aclk)
 
   wr_clr(`MST0);
   mst0_wlast=0;
@@ -1530,35 +1563,64 @@ task interleaving();
 aw_req(`MST0,`SLV0,0,`INCR,32,3);
 @(negedge aclk);
 wait(mst0_awvalid && mst0_awready);
+aw_req(`MST0,`SLV0,1,`INCR,4104,3);
+@(negedge aclk);
+wait(mst0_awvalid && mst0_awready);
+aw_req_clr(`MST0);
+
 
 //send id=0
 wr(`MST0,0,32'h1010_1111, 4'b1111);
-aw_req(`MST0,`SLV0,1,`INCR,4104,3);
-@(negedge aclk);
+
+wait(mst0_wvalid && mst0_wready);
+@(posedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(negedge aclk)
 
 wr(`MST0,1,32'h2020_1111, 4'b1111);
-aw_req_clr(`MST0);
-@(negedge aclk);
+
+wait(mst0_wvalid && mst0_wready);
+@(posedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(negedge aclk)
 
 wr(`MST0,0,32'h1010_2222, 4'b1111);
-@(negedge aclk); 
+wait(mst0_wvalid && mst0_wready);
+@(posedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(negedge aclk)
 
 wr(`MST0,1,32'h2020_2222, 4'b1111);
-@(negedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(posedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(negedge aclk)
 
 wr(`MST0,0,32'h1010_3333, 4'b1111);
-@(negedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(posedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(negedge aclk)
 
 wr(`MST0,1,32'h2020_3333, 4'b1111);
-@(negedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(posedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(negedge aclk)
 
 wr(`MST0,0,32'h1010_4444, 4'b1111);
 mst0_wlast=1;
-@(negedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(posedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(negedge aclk)
 
-wr(`MST0,1,32'h1010_4444, 4'b1111);
+wr(`MST0,1,32'h2020_4444, 4'b1111);
 mst0_wlast=1;
-@(negedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(posedge aclk);
+wait(mst0_wvalid && mst0_wready);
+@(negedge aclk)
 
 wr_clr(`MST0);
 mst0_wlast=0;
@@ -1590,11 +1652,13 @@ begin
 end
 end
 // initial
-
-//   $sdf_annotate("my.sdf",dut)
+// begin
+// $sdf_annotate("../../icc/output/axi_crossbar_top.sdf",axi_crossbar_top,,"sdf.log");
+// $display(" **************** SDF *********************");
+// end
 
 initial begin
-    #(1e6*clk_period);
+    #(1e7*half_clk_period);
     $display ("!!!!!!ERROR Timeout !!!!!!!! at time %t", $time);
     
     $finish;
@@ -1627,7 +1691,7 @@ initial begin
 
 
   //always>>>
-always #(clk_period/2)  aclk = ~ aclk ;
+always #(half_clk_period)  aclk = ~ aclk ;
   //comb>>>
 assign mst0_arlen=mst0_arlen_real;
 assign mst1_arlen=mst1_arlen_real;
@@ -1648,13 +1712,14 @@ initial begin
     axi_init();
     @(negedge aclk);
 
+    test_status=1;
     out_of_order();
-    $display("\n *******wr out of order test finish!!!******* \n");
+    $display("\n *******test_status=1 , wr out of order test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
-
+    test_status=2;
     interleaving();
-    $display("\n *******wr interleaving test finish!!!******* \n");
+    $display("\n *******test_status=2 , wr interleaving test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
 
