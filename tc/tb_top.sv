@@ -1622,7 +1622,9 @@ initial begin
       axi_init();
       apb_init();
     join
-    
+        //低功耗模式
+    force tb_top.axi_crossbar_top_inst.low_power_n=0;
+
     test_status=1;
     mst0_or();
     $display("\n *******outstanding test finish!!!******* \n");

@@ -1912,7 +1912,10 @@ force tb_withbridge.ahb_slv_responder_inst.ecc_error=0;
 force tb_withbridge.axi_slv0_responder_inst.ecc_error=0; 
 force tb_withbridge.axi_slv1_responder_inst.ecc_error=0; 
     //low power && priority
-    apb_wr(0,{{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},{1'b0},{7{1'b0}}});
+    apb_wr(0,//addr
+    {{2'b00},{2'b00},{2'b00},{2'b10},{2'b01},{2'b00},//priority
+    {1'b0},//低功耗
+    {7{1'b0}}});
     repeat(20)@(negedge aclk);
     wr_req_id=0;
     rd_req_id=0;

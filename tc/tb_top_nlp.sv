@@ -1,6 +1,6 @@
 `include "macro.vh"
 //111112
-module tb_interleaving();
+module tb_top_nlp();
 
 //localparam >>>
 
@@ -109,7 +109,7 @@ logic   [8             -1:0] mst0_awlen;
 logic   [3             -1:0] mst0_awsize;
 logic   [2             -1:0] mst0_awburst;
 logic   [2             -1:0] mst0_awlock;
-logic   [AXI_ID_W      -1:0] mst0_awid  ;
+logic   [AXI_ID_W      -1:0] mst0_awid;
 logic  mst0_wvalid;
 logic  mst0_wready;
 logic  mst0_wlast;
@@ -123,7 +123,7 @@ logic [2             -1:0] mst0_bresp;
 logic  mst0_arvalid;
 logic  mst0_arready;
 logic   [AXI_ADDR_W    -1:0] mst0_araddr;
-logic   [8          -1:0] mst0_arlen;
+logic   [8             -1:0] mst0_arlen;
 logic   [3             -1:0] mst0_arsize;
 logic   [2             -1:0] mst0_arburst;
 logic   [2             -1:0] mst0_arlock;
@@ -301,7 +301,7 @@ logic [AXI_ADDR_W    -1:0] slv2_araddr;
 logic [8             -1:0] slv2_arlen;
 logic [3             -1:0] slv2_arsize;
 logic [2             -1:0] slv2_arburst;
-logic [2             -1:0] slv2_arlock; 
+logic [2             -1:0] slv2_arlock;
 logic [AXI_ID_W      -1:0] slv2_arid;
 logic  slv2_rvalid;
 logic  slv2_rready;
@@ -324,7 +324,6 @@ logic                       PREADY;
 logic                      low_power_n;
 
 //apb<<<
-
 //<<<
 
 //dut>>>
@@ -368,7 +367,7 @@ axi_crossbar_top # (
 axi_crossbar_top_inst (
   .aclk(aclk),
   .aresetn(aresetn),
-  
+
   .mst0_aclk(aclk),
   .mst0_aresetn(aresetn),
 
@@ -387,7 +386,7 @@ axi_crossbar_top_inst (
   .mst0_wstrb(mst0_wstrb),
   .mst0_wid(mst0_wid),
   .mst0_bvalid(mst0_bvalid),
-  .mst0_bready(1),
+  .mst0_bready(mst0_bready),
   .mst0_bid(mst0_bid),
   .mst0_bresp(mst0_bresp),
   .mst0_arvalid(mst0_arvalid),
@@ -399,14 +398,14 @@ axi_crossbar_top_inst (
   .mst0_arlock(mst0_arlock),
   .mst0_arid(mst0_arid),
   .mst0_rvalid(mst0_rvalid),
-  .mst0_rready(1),
+  .mst0_rready(mst0_rready),
   .mst0_rid(mst0_rid),
   .mst0_rresp(mst0_rresp),
   .mst0_rdata(mst0_rdata),
   .mst0_rlast(mst0_rlast),
   .mst1_aclk(aclk),
   .mst1_aresetn(aresetn),
-  
+
   .mst1_awvalid(mst1_awvalid),
   .mst1_awready(mst1_awready),
   .mst1_awaddr(mst1_awaddr),
@@ -422,7 +421,7 @@ axi_crossbar_top_inst (
   .mst1_wstrb(mst1_wstrb),
   .mst1_wid(mst1_wid),
   .mst1_bvalid(mst1_bvalid),
-  .mst1_bready(1),
+  .mst1_bready(mst1_bready),
   .mst1_bid(mst1_bid),
   .mst1_bresp(mst1_bresp),
   .mst1_arvalid(mst1_arvalid),
@@ -434,7 +433,7 @@ axi_crossbar_top_inst (
   .mst1_arlock(mst1_arlock),
   .mst1_arid(mst1_arid),
   .mst1_rvalid(mst1_rvalid),
-  .mst1_rready(1),
+  .mst1_rready(mst1_rready),
   .mst1_rid(mst1_rid),
   .mst1_rresp(mst1_rresp),
   .mst1_rdata(mst1_rdata),
@@ -457,7 +456,7 @@ axi_crossbar_top_inst (
   .mst2_wstrb(mst2_wstrb),
   .mst2_wid(mst2_wid),
   .mst2_bvalid(mst2_bvalid),
-  .mst2_bready(1),
+  .mst2_bready(mst2_bready),
   .mst2_bid(mst2_bid),
   .mst2_bresp(mst2_bresp),
   .mst2_arvalid(mst2_arvalid),
@@ -469,7 +468,7 @@ axi_crossbar_top_inst (
   .mst2_arlock(mst2_arlock),
   .mst2_arid(mst2_arid),
   .mst2_rvalid(mst2_rvalid),
-  .mst2_rready(1),
+  .mst2_rready(mst2_rready),
   .mst2_rid(mst2_rid),
   .mst2_rresp(mst2_rresp),
   .mst2_rdata(mst2_rdata),
@@ -585,109 +584,108 @@ axi_crossbar_top_inst (
 //<<<
 
 //mst>>>
-// axi_mst_driver # (
-//     .AXI_ADDR_W(AXI_ADDR_W),
-//     .AXI_ID_W(AXI_ID_W),
-//     .AXI_DATA_W(AXI_DATA_W),
-//     .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-//     .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-//     .AWCH_W(AWCH_W),
-//     .WCH_W(WCH_W),
-//     .BCH_W(BCH_W),
-//     .ARCH_W(ARCH_W),
-//     .RCH_W(RCH_W)
-//   )
-//   axi_mst0_driver_inst (
-//     .aclk(aclk),
-//     .aresetn(aresetn),
-//     .srst(srst),
-//     .in_awvalid(mst0_awvalid),
-//     .in_awready(mst0_awready),
-//     .in_awlen_real(mst0_awlen_real),
-//     .awlen(mst0_awlen),
-//     .in_awid(mst0_awid),
+axi_mst_driver # (
+    .AXI_ADDR_W(AXI_ADDR_W),
+    .AXI_ID_W(AXI_ID_W),
+    .AXI_DATA_W(AXI_DATA_W),
+    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+    .AWCH_W(AWCH_W),
+    .WCH_W(WCH_W),
+    .BCH_W(BCH_W),
+    .ARCH_W(ARCH_W),
+    .RCH_W(RCH_W)
+  )
+  axi_mst0_driver_inst (
+    .aclk(aclk),
+    .aresetn(aresetn),
+    .srst(srst),
+    .in_awvalid(mst0_awvalid),
+    .in_awready(mst0_awready),
+    .in_awlen_real(mst0_awlen_real),
+    .awlen(mst0_awlen),
+    .in_awid(mst0_awid),
     
-//     .out_wvalid(mst0_wvalid),
-//     .in_wready(mst0_wready),
-//     .out_wlast(mst0_wlast),
-//     .out_wid(mst0_wid),
-//     .out_wdata(mst0_wdata),
-//     .out_wstrb(mst0_wstrb),
-//     .narrow(mst0_narrow),
-//     .out_rready(mst0_rready),
-//     .out_bready(mst0_bready)
-//   );
+    .out_wvalid(mst0_wvalid),
+    .in_wready(mst0_wready),
+    .out_wlast(mst0_wlast),
+    .out_wid(mst0_wid),
+    .out_wdata(mst0_wdata),
+    .out_wstrb(mst0_wstrb),
+    .narrow(mst0_narrow),
+    .out_rready(mst0_rready),
+    .out_bready(mst0_bready)
+  );
 
-  // axi_mst_driver # (
-  //   .AXI_ADDR_W(AXI_ADDR_W),
-  //   .AXI_ID_W(AXI_ID_W),
-  //   .AXI_DATA_W(AXI_DATA_W),
-  //   .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-  //   .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-  //   .AWCH_W(AWCH_W),
-  //   .WCH_W(WCH_W),
-  //   .BCH_W(BCH_W),
-  //   .ARCH_W(ARCH_W),
-  //   .RCH_W(RCH_W)
-  // )
-  // axi_mst1_driver_inst (
-  //   .aclk(aclk),
-  //   .aresetn(aresetn),
-  //   .srst(srst),
-  //   .in_awvalid(mst1_awvalid),
-  //   .in_awready(mst1_awready),
-  //   .in_awlen_real(mst1_awlen_real),
-  //   .awlen(mst1_awlen),
-  //   .in_awid(mst1_awid),
+  axi_mst_driver # (
+    .AXI_ADDR_W(AXI_ADDR_W),
+    .AXI_ID_W(AXI_ID_W),
+    .AXI_DATA_W(AXI_DATA_W),
+    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+    .AWCH_W(AWCH_W),
+    .WCH_W(WCH_W),
+    .BCH_W(BCH_W),
+    .ARCH_W(ARCH_W),
+    .RCH_W(RCH_W)
+  )
+  axi_mst1_driver_inst (
+    .aclk(aclk),
+    .aresetn(aresetn),
+    .srst(srst),
+    .in_awvalid(mst1_awvalid),
+    .in_awready(mst1_awready),
+    .in_awlen_real(mst1_awlen_real),
+    .awlen(mst1_awlen),
+    .in_awid(mst1_awid),
   
-  //   .out_wvalid(mst1_wvalid),
-  //   .in_wready(mst1_wready),
-  //   .out_wlast(mst1_wlast),
-  //   .out_wid(mst1_wid),
-  //   .out_wdata(mst1_wdata),
-  //   .out_wstrb(mst1_wstrb),
-  //   .narrow(mst1_narrow),
-  //   .out_rready(mst1_rready),
-  //   .out_bready(mst1_bready)
-  // );
+    .out_wvalid(mst1_wvalid),
+    .in_wready(mst1_wready),
+    .out_wlast(mst1_wlast),
+    .out_wid(mst1_wid),
+    .out_wdata(mst1_wdata),
+    .out_wstrb(mst1_wstrb),
+    .narrow(mst1_narrow),
+    .out_rready(mst1_rready),
+    .out_bready(mst1_bready)
+  );
 
-  // axi_mst_driver # (
-  //   .AXI_ADDR_W(AXI_ADDR_W),
-  //   .AXI_ID_W(AXI_ID_W),
-  //   .AXI_DATA_W(AXI_DATA_W),
-  //   .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
-  //   .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
-  //   .AWCH_W(AWCH_W),
-  //   .WCH_W(WCH_W),
-  //   .BCH_W(BCH_W),
-  //   .ARCH_W(ARCH_W),
-  //   .RCH_W(RCH_W)
-  // )
-  // axi_mst2_driver_inst (
-  //   .aclk(aclk),
-  //   .aresetn(aresetn),
-  //   .srst(srst),
-  //   .in_awvalid(mst2_awvalid),
-  //   .in_awready(mst2_awready),
-  //   .in_awlen_real(mst2_awlen_real),
-  //   .awlen(mst2_awlen),
-  //   .in_awid(mst2_awid),
+  axi_mst_driver # (
+    .AXI_ADDR_W(AXI_ADDR_W),
+    .AXI_ID_W(AXI_ID_W),
+    .AXI_DATA_W(AXI_DATA_W),
+    .MST_OSTDREQ_NUM(MST0_OSTDREQ_NUM),
+    .MST_OSTDREQ_SIZE(MST0_OSTDREQ_SIZE),
+    .AWCH_W(AWCH_W),
+    .WCH_W(WCH_W),
+    .BCH_W(BCH_W),
+    .ARCH_W(ARCH_W),
+    .RCH_W(RCH_W)
+  )
+  axi_mst2_driver_inst (
+    .aclk(aclk),
+    .aresetn(aresetn),
+    .srst(srst),
+    .in_awvalid(mst2_awvalid),
+    .in_awready(mst2_awready),
+    .in_awlen_real(mst2_awlen_real),
+    .awlen(mst2_awlen),
+    .in_awid(mst2_awid),
 
-  //   .out_wvalid(mst2_wvalid),
-  //   .in_wready(mst2_wready),
-  //   .out_wlast(mst2_wlast),
-  //   .out_wid(mst2_wid),
-  //   .out_wdata(mst2_wdata),
-  //   .out_wstrb(mst2_wstrb),
-  //   .narrow(mst2_narrow),
-  //   .out_rready(mst2_rready),
-  //   .out_bready(mst2_bready)
-  // );
+    .out_wvalid(mst2_wvalid),
+    .in_wready(mst2_wready),
+    .out_wlast(mst2_wlast),
+    .out_wid(mst2_wid),
+    .out_wdata(mst2_wdata),
+    .out_wstrb(mst2_wstrb),
+    .narrow(mst2_narrow),
+    .out_rready(mst2_rready),
+    .out_bready(mst2_bready)
+  );
 //<<<
 
 //slv>>>
   axi_slv_responder # (
-    .ALWAYS_READY(1),
     .AXI_ADDR_W(AXI_ADDR_W),
     .AXI_ID_W(AXI_ID_W),
     .AXI_DATA_W(AXI_DATA_W),
@@ -715,7 +713,7 @@ axi_crossbar_top_inst (
 
     .in_arvalid(slv0_arvalid),
     .out_arready(slv0_arready),
-    .in_arlen(slv0_arlen_real),
+    .in_arlen(slv0_arlen),
     .in_arid(slv0_arid),
     .out_rvalid(slv0_rvalid),
     .out_rresp(slv0_rresp),
@@ -727,7 +725,6 @@ axi_crossbar_top_inst (
   );
 
   axi_slv_responder # (
-    .ALWAYS_READY(1),
     .AXI_ADDR_W(AXI_ADDR_W),
     .AXI_ID_W(AXI_ID_W),
     .AXI_DATA_W(AXI_DATA_W),
@@ -755,7 +752,7 @@ axi_crossbar_top_inst (
 
     .in_arvalid(slv1_arvalid),
     .out_arready(slv1_arready),
-    .in_arlen(slv1_arlen_real),
+    .in_arlen(slv1_arlen),
     .in_arid(slv1_arid),
     .out_rvalid(slv1_rvalid),
     .out_rresp(slv1_rresp),
@@ -794,7 +791,7 @@ axi_crossbar_top_inst (
 
     .in_arvalid(slv2_arvalid),
     .out_arready(slv2_arready),
-    .in_arlen(slv2_arlen_real),
+    .in_arlen(slv2_arlen),
     .in_arid(slv2_arid),
     .out_rvalid(slv2_rvalid),
     .out_rresp(slv2_rresp),
@@ -849,7 +846,7 @@ axi_crossbar_top_inst (
   
   end
   endtask
-  
+
 task aw_req_clr(
     input [1:0] mst_id
 );  
@@ -1134,67 +1131,6 @@ endcase
 end
 endtask
 
-task wr(input [1:0] mst_id,input [1:0] wid,input [AXI_DATA_W - 1 : 0] wdata,input [4-1:0]wstrb
-);   
-begin
-  
-case (mst_id)
-    2'b01: 
-    begin
-        mst0_wid={2'b00,wid};
-        mst0_wvalid=1;
-        mst0_wdata=wdata;
-        mst0_wstrb=wstrb;
-    end 
-    2'b10:
-    begin
-      mst1_wid={2'b00,wid};
-      mst1_wvalid=1;
-      mst1_wdata=wdata;
-      mst1_wstrb=wstrb;
-    end 
-    2'b11:
-    begin
-      mst2_wid={2'b00,wid};
-      mst2_wvalid=1;
-      mst2_wdata=wdata;
-      mst2_wstrb=wstrb;
-    end 
-    default: $display("error!!! 主机掩码不能为零!");
-endcase
-end
-endtask
-
-task wr_clr(input [1:0] mst_id
-);   
-begin
-  
-case (mst_id)
-    2'b01: 
-    begin
-        mst0_wid='b0;
-        mst0_wvalid='b0;
-        mst0_wdata='b0;
-        mst0_wstrb='b0;
-    end 
-    2'b10:
-    begin
-      mst1_wid='b0;
-      mst1_wvalid='b0;
-      mst1_wdata='b0;
-      mst1_wstrb='b0;
-    end 
-    2'b11:
-    begin
-      mst2_wid='b0;
-      mst2_wvalid='b0;
-      mst2_wdata='b0;
-      mst2_wstrb='b0;
-    end 
-    default: $display("error!!! 主机掩码不能为零!");
-endcase
-end
-endtask
 //<<<
 
 //test case>>>
@@ -1230,38 +1166,25 @@ begin
     mst0_narrow='b0;
     mst1_narrow='b0;
     mst2_narrow='b0;
-
-
     //@(negedge aclk);
 
     @(negedge aclk);
     aresetn =0 ; //复位
     @(negedge aclk);
     aresetn =1 ; //置位
+    //for cov
     @(negedge aclk);
+    srst=1;//复位
+    @(negedge aclk);
+    srst=0;//置位
 
 end
 endtask
-
-task driver_init();
-begin
-  wr_clr(`MST0);
-  wr_clr(`MST1);
-  wr_clr(`MST2);
-  mst0_wlast=0;
-  mst1_wlast=0;
-  mst2_wlast=0;
-  mst0_wvalid=0;
-  mst1_wvalid=0;
-  mst2_wvalid=0;
-end
-endtask
-
 
 task mst0_or();
 begin
   wr_req_id=0;
-  rd_req_id=0;
+    rd_req_id=0;
 
     repeat(testnum)begin
       aw_INCR_req_random(`MST0,`SLV0,wr_req_id);
@@ -1291,6 +1214,7 @@ begin
 
     repeat(testnum)begin
       aw_INCR_req_random(`MST0,`SLV0,wr_req_id);
+      $display("wr_req_id%d",wr_req_id);
       wait(mst0_awvalid && mst0_awready);
       @(negedge aclk);
       wr_req_id+=1;
@@ -1470,168 +1394,160 @@ begin
   ar_req_clr(`MST0);
 end
 endtask
-
-
-task out_of_order();
+//<<<
+//test case for cov>>>
+task outstanding(input [1:0]mstID, input [1:0]slvID);
 begin
-    //aw req
-  aw_req(`MST0,`SLV0,0,`INCR,32,2);
-  @(negedge aclk);
-  wait(mst0_awvalid && mst0_awready);
-  aw_req(`MST0,`SLV0,1,`INCR,4104,1);
-  @(negedge aclk);
-  wait(mst0_awvalid && mst0_awready);
-  aw_req(`MST0,`SLV0,2,`INCR,64,3);
-  @(negedge aclk);
-  wait(mst0_awvalid && mst0_awready);
-  aw_req_clr(`MST0);
-  @(negedge aclk);
+  wr_req_id=0;
+    rd_req_id=0;
 
+    repeat(testnum)begin
+      aw_INCR_req_random(mstID,slvID,wr_req_id);
 
-//send id=0
-  wr(`MST0,0,32'h1111_1111, 4'b1111);
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk)
-  wr(`MST0,0,32'h2222_2222, 4'b1111);
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk);
-  wr(`MST0,0,32'h3333_3333, 4'b1111);
-  mst0_wlast=1;
+      wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
+      @(negedge aclk);
+      wr_req_id+=1;
+    end
 
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk)
+     aw_req_clr(mstID);
+     
+     repeat(testnum)begin
+      ar_INCR_req_random(mstID,slvID,rd_req_id);
+      wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
 
- 
-  
-  // wr_clr(`MST0);
-  // @(negedge aclk);
-//send id=2  
-  wr(`MST0,2,32'h1111_1111, 4'b1111);
-  mst0_wlast=0;
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk)
+      @(negedge aclk);
+      rd_req_id+=1;
+    end
 
-  wr(`MST0,2,32'h2222_2222, 4'b1111);
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk)
-
-  wr(`MST0,2,32'h3333_3333, 4'b1111);
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk)
-
-  wr(`MST0,2,32'h4444_4444, 4'b1111);
-  mst0_wlast=1;
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk)
-  
-  //send id=1  
-  wr(`MST0,1,32'h1111_1111, 4'b1111);
-  mst0_wlast=0;
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk)
-  wr(`MST0,1,32'h2222_2222, 4'b1111);
-  mst0_wlast=1;
-  wait(mst0_wvalid && mst0_wready);
-  @(posedge aclk);
-  wait(mst0_wvalid && mst0_wready);
-  @(negedge aclk)
-
-  wr_clr(`MST0);
-  mst0_wlast=0;
+     ar_req_clr(mstID);
 end
-
 endtask
 
-task interleaving();
-  //aw req
-aw_req(`MST0,`SLV0,0,`INCR,32,3);
-@(negedge aclk);
-wait(mst0_awvalid && mst0_awready);
-aw_req(`MST0,`SLV0,1,`INCR,4104,3);
-@(negedge aclk);
-wait(mst0_awvalid && mst0_awready);
-aw_req_clr(`MST0);
 
 
-//send id=0
-wr(`MST0,0,32'h1010_1111, 4'b1111);
+task  burst256(input [1:0]mstID, input [1:0]slvID);
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
 
-wait(mst0_wvalid && mst0_wready);
-@(posedge aclk);
-wait(mst0_wvalid && mst0_wready);
-@(negedge aclk)
+    
+  aw_req(mstID,slvID,wr_req_id,`INCR,0,255);
+  @(negedge aclk);
+  wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+    //  repeat(testnum)begin
+    //   ar_INCR_req_random(mstID,slvID,rd_req_id);
+    //   wait(mst0_arvalid && mst0_arready); 
+    //   @(negedge aclk);
+    //   rd_req_id+=1;
+    // end
 
-wr(`MST0,1,32'h2020_1111, 4'b1111);
+    //  ar_req_clr(mstID);
+end
+endtask
 
-wait(mst0_wvalid && mst0_wready);
-@(posedge aclk);
-wait(mst0_wvalid && mst0_wready);
-@(negedge aclk)
+task fixed_burst(input [1:0]mstID, input [1:0]slvID);
+begin
 
-wr(`MST0,0,32'h1010_2222, 4'b1111);
-wait(mst0_wvalid && mst0_wready);
-@(posedge aclk);
-wait(mst0_wvalid && mst0_wready);
-@(negedge aclk)
+  wr_req_id=0;
+  rd_req_id=0;
 
-wr(`MST0,1,32'h2020_2222, 4'b1111);
-wait(mst0_wvalid && mst0_wready);
-@(posedge aclk);
-wait(mst0_wvalid && mst0_wready);
-@(negedge aclk)
+    
+  aw_req(mstID,slvID,wr_req_id,`FIXED,0,10);
+  @(negedge aclk);
+  wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+  ar_req(mstID,slvID,rd_req_id,`FIXED,0,10);
+  @(negedge aclk);
+  wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
+  rd_req_id+=1;
+  ar_req_clr(mstID);
+end
+endtask
 
-wr(`MST0,0,32'h1010_3333, 4'b1111);
-wait(mst0_wvalid && mst0_wready);
-@(posedge aclk);
-wait(mst0_wvalid && mst0_wready);
-@(negedge aclk)
+task wrap_burst(input [1:0]mstID, input [1:0]slvID);
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
 
-wr(`MST0,1,32'h2020_3333, 4'b1111);
-wait(mst0_wvalid && mst0_wready);
-@(posedge aclk);
-wait(mst0_wvalid && mst0_wready);
-@(negedge aclk)
+    
+  aw_req(mstID,slvID,wr_req_id,`WRAP,4088,12);
+  @(negedge aclk);
+ wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+  ar_req(mstID,slvID,rd_req_id,`WRAP,4088,12);
+  @(negedge aclk);
+  wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
+  rd_req_id+=1;
+  ar_req_clr(mstID);
+end
+endtask
+integer endaddr;
+task Bound_burst(input [1:0]mstID, input [1:0]slvID);
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
+  
+  case (slvID)
+    0: endaddr=`SLV0_END_ADDR;
+    1: endaddr=`SLV1_END_ADDR;
+    2: endaddr=`SLV2_END_ADDR;
+    default: endaddr=`SLV0_END_ADDR;
+  endcase
+    
+  aw_req(mstID,slvID,wr_req_id,`INCR,endaddr-5,7);
+  @(negedge aclk);
+  wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+  ar_req(mstID,slvID,rd_req_id,`INCR,endaddr-5,7);
+  @(negedge aclk);
+  wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
+  rd_req_id+=1;
+  ar_req_clr(mstID);
+end
+endtask
 
-wr(`MST0,0,32'h1010_4444, 4'b1111);
-mst0_wlast=1;
-wait(mst0_wvalid && mst0_wready);
-@(posedge aclk);
-wait(mst0_wvalid && mst0_wready);
-@(negedge aclk)
+task mistroute(input [1:0]mstID, input [1:0]slvID);
+begin
+  mst0_narrow=0;
+  wr_req_id=0;
+  rd_req_id=0;
 
-wr(`MST0,1,32'h2020_4444, 4'b1111);
-mst0_wlast=1;
-wait(mst0_wvalid && mst0_wready);
-@(posedge aclk);
-wait(mst0_wvalid && mst0_wready);
-@(negedge aclk)
-
-wr_clr(`MST0);
-mst0_wlast=0;
-endtask //interleaving();
+    
+  aw_req(mstID,2'b11,wr_req_id,`INCR,12287+32,7);
+  @(negedge aclk);
+  wait( (mstID==`MST0 && mst0_awvalid && mst0_awready) || (mstID==`MST1 && mst1_awvalid && mst1_awready) || (mstID==`MST2 && mst2_awvalid && mst2_awready)  );
+  
+  wr_req_id+=1;
+  aw_req_clr(mstID);
+  
+  ar_req(mstID,2'b11,rd_req_id,`INCR,12287+32,7);
+  @(negedge aclk);
+  wait( (mstID==`MST0 && mst0_arvalid && mst0_arready) || (mstID==`MST1 && mst1_arvalid && mst1_arready) || (mstID==`MST2 && mst2_arvalid && mst2_arready)  );
+  rd_req_id+=1;
+  ar_req_clr(mstID);
+end
+endtask
 //<<<
-
 //dump、timeout、finish>>>
 //fsdb
 initial
 begin
-if($test$plusargs("dump_fsdb"))
+//if($test$plusargs("dump_fsdb"))
 begin
 $fsdbDumpfile("testname.fsdb");  //记录波形，波形名字testname.fsdb
 $fsdbDumpvars("+all");  //+all参数，dump SV中的struct结构体
@@ -1647,18 +1563,17 @@ initial
 begin
 if($test$plusargs("dump_vcd"))
 begin
-  $dumpfile("intl.dump");
+  $dumpfile("xbar.dump");
   $dumpvars;
 end
+end 
+initial
+begin
+$sdf_annotate("../../icc/output/axi_crossbar_top.sdf",axi_crossbar_top,,"sdf.log");
+$display(" **************** SDF *********************");
 end
-// initial
-// begin
-// $sdf_annotate("../../icc/output/axi_crossbar_top.sdf",axi_crossbar_top,,"sdf.log");
-// $display(" **************** SDF *********************");
-// end
-
 initial begin
-    #(1e7*half_clk_period);
+    #(1e6*half_clk_period);
     $display ("!!!!!!ERROR Timeout !!!!!!!! at time %t", $time);
     
     $finish;
@@ -1692,44 +1607,345 @@ initial begin
 
   //always>>>
 always #(half_clk_period)  aclk = ~ aclk ;
-  //comb>>>
+  //comb
 assign mst0_arlen=mst0_arlen_real;
 assign mst1_arlen=mst1_arlen_real;
 assign mst2_arlen=mst2_arlen_real;
-
-assign mst0_awlen=mst0_awlen_real;
-assign mst1_awlen=mst1_awlen_real;
-assign mst2_awlen=mst2_awlen_real;
-//<<<
 //assign mst0 mst0_awlen_real;
 //main>>>
 
 //send req
 initial begin
-  //init
+
     test_status=0;
-    driver_init();
-    axi_init();
-            //低功耗模式
-    force tb_top.axi_crossbar_top_inst.low_power_n=0;
-    @(negedge aclk);
+    fork: init
+      axi_init();
+      apb_init();
+    join 
+    //非低功耗模式
+    force tb_top_nlp.axi_crossbar_top_inst.low_power_n=1;
 
     test_status=1;
-    out_of_order();
-    $display("\n *******test_status=1 , wr out of order test finish!!!******* \n");
+    mst0_or();
+    $display("\n *******outstanding test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
     test_status=2;
-    interleaving();
-    $display("\n *******test_status=2 , wr interleaving test finish!!!******* \n");
+    mst0_narrow_or();
+    $display("\n *******narrow test finish!!!******* \n");
     repeat(100) @(negedge aclk);
 
+    test_status=3; 
+    mst0_256_burst();
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(1500) @(negedge aclk);
 
+    test_status=4;
+    mst0_fixed_burst();
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(1100) @(negedge aclk);
 
+    test_status=5;
+    mst0_wrap_burst();
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
 
+    test_status=6;
+    multi2multi();
+    $display("\n *******multi2multi burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
 
+    test_status=7;
+    mst0_4kBound_burst();
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
 
+    test_status=8;
+    mst0_mistroute();
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+//for cov >>>
+//0>>>
+    test_status=1;
+outstanding(`MST0,`SLV0);
+$display("\n *******outstanding test finish!!!******* \n");
+repeat(100) @(negedge aclk);
 
+test_status=3; 
+burst256(`MST0,`SLV0);
+$display("\n *******256 length burst test finish!!!******* \n");
+repeat(500) @(negedge aclk);
+
+test_status=4;
+fixed_burst(`MST0,`SLV0);
+$display("\n *******fixed burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=5;
+wrap_burst(`MST0,`SLV0);
+$display("\n ******* wrap burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=7;
+Bound_burst(`MST0,`SLV0);
+$display("\n *******4kBound_burst burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=8;
+mistroute(`MST0,`SLV0);
+$display("\n *******mistroute test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+$display("\n *****************************************************************11111111 \n");
+    test_status=1;
+    outstanding(`MST0,`SLV1);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=3; 
+    burst256(`MST0,`SLV1);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+
+    test_status=4;
+    fixed_burst(`MST0,`SLV1);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=5;
+    wrap_burst(`MST0,`SLV1);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST0,`SLV1);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=8;
+    mistroute(`MST0,`SLV1);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************2222222 \n");
+    test_status=1;
+    outstanding(`MST0,`SLV2);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=3; 
+    burst256(`MST0,`SLV2);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+    
+    test_status=4;
+    fixed_burst(`MST0,`SLV2);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=5;
+    wrap_burst(`MST0,`SLV2);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST0,`SLV2);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=8;
+    mistroute(`MST0,`SLV2);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************33333333333 \n");
+//0<<<
+
+//1>>>
+    test_status=1;
+outstanding(`MST1,`SLV0);
+$display("\n *******outstanding test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=3; 
+burst256(`MST1,`SLV0);
+$display("\n *******256 length burst test finish!!!******* \n");
+repeat(500) @(negedge aclk);
+
+test_status=4;
+fixed_burst(`MST1,`SLV0);
+$display("\n *******fixed burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=5;
+wrap_burst(`MST1,`SLV0);
+$display("\n ******* wrap burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=7;
+Bound_burst(`MST1,`SLV0);
+$display("\n *******4kBound_burst burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=8;
+mistroute(`MST1,`SLV0);
+$display("\n *******mistroute test finish!!!******* \n");
+
+$display("\n *****************************************************************4444444444444 \n");
+repeat(100) @(negedge aclk);
+
+    test_status=1;
+    outstanding(`MST1,`SLV1);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=3; 
+    burst256(`MST1,`SLV1);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+
+    test_status=4;
+    fixed_burst(`MST1,`SLV1);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=5;
+    wrap_burst(`MST1,`SLV1);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST1,`SLV1);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=8;
+    mistroute(`MST1,`SLV1);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************5555555555555 \n");
+    test_status=1;
+    outstanding(`MST1,`SLV2);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=3; 
+    burst256(`MST1,`SLV2);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+    
+    test_status=4;
+    fixed_burst(`MST1,`SLV2);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=5;
+    wrap_burst(`MST1,`SLV2);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST1,`SLV2);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=8;
+    mistroute(`MST1,`SLV2);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************66666666666 \n");
+//1<<<
+
+    //2>>>
+    test_status=1;
+outstanding(`MST2,`SLV0);
+$display("\n *******outstanding test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=3; 
+burst256(`MST2,`SLV0);
+$display("\n *******256 length burst test finish!!!******* \n");
+repeat(500) @(negedge aclk);
+
+test_status=4;
+fixed_burst(`MST2,`SLV0);
+$display("\n *******fixed burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=5;
+wrap_burst(`MST2,`SLV0);
+$display("\n ******* wrap burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=7;
+Bound_burst(`MST2,`SLV0);
+$display("\n *******4kBound_burst burst test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+
+test_status=8;
+mistroute(`MST2,`SLV0);
+$display("\n *******mistroute test finish!!!******* \n");
+repeat(100) @(negedge aclk);
+$display("\n *****************************************************************7777777777 \n");
+    test_status=1;
+    outstanding(`MST2,`SLV1);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=3; 
+    burst256(`MST2,`SLV1);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+
+    test_status=4;
+    fixed_burst(`MST2,`SLV1);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=5;
+    wrap_burst(`MST2,`SLV1);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST2,`SLV1);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+
+    test_status=8;
+    mistroute(`MST2,`SLV1);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************888888888\n");
+    test_status=1;
+    outstanding(`MST2,`SLV2);
+    $display("\n *******outstanding test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=3; 
+    burst256(`MST2,`SLV2);
+    $display("\n *******256 length burst test finish!!!******* \n");
+    repeat(500) @(negedge aclk);
+    
+    test_status=4;
+    fixed_burst(`MST2,`SLV2);
+    $display("\n *******fixed burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=5;
+    wrap_burst(`MST2,`SLV2);
+    $display("\n ******* wrap burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=7;
+    Bound_burst(`MST2,`SLV2);
+    $display("\n *******4kBound_burst burst test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    
+    test_status=8;
+    mistroute(`MST2,`SLV2);
+    $display("\n *******mistroute test finish!!!******* \n");
+    repeat(100) @(negedge aclk);
+    $display("\n *****************************************************************999999999\n");
+//2<<<
+    //for cov<<<
     $display("****************************************************************");
     $display ("*******all test case task done!!!!! at time %t*******", $time);
     $display("****************************************************************");
